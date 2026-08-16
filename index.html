@@ -413,8 +413,8 @@ hr{border:none;border-top:1px solid var(--border)}
       <div class="qs-label" id="qsLabel">🏕 Resting by camp</div>
       <div class="qs-char-wrap" id="qsCharWrap">
         <div class="qs-char-layer" id="qsSkin"></div>
-        <div class="qs-char-layer" id="qsBoots"></div>
         <div class="qs-char-layer" id="qsPants"></div>
+        <div class="qs-char-layer" id="qsBoots"></div>
         <div class="qs-char-layer" id="qsShirt"></div>
         <div class="qs-char-layer" id="qsSword"></div>
         <div class="qs-char-layer" id="qsHair"></div>
@@ -540,8 +540,8 @@ hr{border:none;border-top:1px solid var(--border)}
       <!-- Character (skin base → clothing → weapon → hair) -->
       <div class="hs-char-wrap">
         <div class="hs-char-layer" id="hsSkin"></div>
-        <div class="hs-char-layer" id="hsBoots"></div>
         <div class="hs-char-layer" id="hsPants"></div>
+        <div class="hs-char-layer" id="hsBoots"></div>
         <div class="hs-char-layer" id="hsShirt"></div>
         <div class="hs-char-layer" id="hsSword"></div>
         <div class="hs-char-layer" id="hsHair"></div>
@@ -572,6 +572,14 @@ hr{border:none;border-top:1px solid var(--border)}
         <div class="ward-opts">
           <div class="ward-chip" id="genderM" onclick="setCustom('gender','m')">♂ Male</div>
           <div class="ward-chip" id="genderF" onclick="setCustom('gender','f')">♀ Female</div>
+        </div>
+      </div>
+      <div class="ward-row">
+        <div class="ward-label">Class</div>
+        <div class="ward-opts">
+          <div class="ward-chip" id="classWarrior" onclick="setCustom('charClass','warrior')">⚔ Warrior</div>
+          <div class="ward-chip" id="classMage" onclick="setCustom('charClass','mage')">✦ Mage</div>
+          <div class="ward-chip" id="classRanger" onclick="setCustom('charClass','ranger')">➳ Ranger</div>
         </div>
       </div>
       <div class="ward-row">
@@ -612,8 +620,8 @@ hr{border:none;border-top:1px solid var(--border)}
     <!-- Hero character (slash anim) — skin first, clothing stacks on top -->
     <div class="co-hero-ov" id="coHeroWrap">
       <div class="co-hero-layer" id="coSkin"></div>
-      <div class="co-hero-layer" id="coBoots"></div>
       <div class="co-hero-layer" id="coPants"></div>
+      <div class="co-hero-layer" id="coBoots"></div>
       <div class="co-hero-layer" id="coShirt"></div>
       <div class="co-hero-layer" id="coSword"></div>
       <div class="co-hero-layer" id="coHair"></div>
@@ -1823,6 +1831,7 @@ function renderHomeScene() {
     var el = document.getElementById(HS_CHAR_IDS[k]);
     if (el) el.style.backgroundImage = layers[k] ? cssUrl(layers[k]) : "none";
   });
+  applyLegLayerOrder(); // renderHomeScene runs on page load + every Profile visit — must re-apply leg stacking
 
   // Home structure
   var homeEl = document.getElementById('hsHome');
@@ -1997,13 +2006,185 @@ var LOOT_TABLE = [
   { id:'helmet_4',           name:'Silver Sallet',    gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_4.png',                   level:20 },
   { id:'helmet_5',           name:'Gold Barbute',     gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_5.png',                   level:30 },
   { id:'helmet_6',           name:'Dark Armet',       gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_6.png',                   level:40 },
+  // ── Female helmets (T2-T6, propagated from male designs) ──────────
+  { id:'helmet_2_f',         name:'Iron Nasal Helm',  gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_2_f.png',                 level:5  },
+  { id:'helmet_3_f',         name:'Chainmail Coif',   gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_3_f.png',                 level:10 },
+  { id:'helmet_4_f',         name:'Silver Sallet',    gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_4_f.png',                 level:20 },
+  { id:'helmet_5_f',         name:'Gold Barbute',     gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_5_f.png',                 level:30 },
+  { id:'helmet_6_f',         name:'Dark Armet',       gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_6_f.png',                 level:40 },
+  // ── Rare Warrior Sets (legendary prestige skins) ──────────────────
+  // Set 1: Crimson Sentinel — deep red + gold visor
+  { id:'helmet_rare1',  name:'Crimson Sentinel Helm',  gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_rare1.png',  level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_rare1_f',name:'Crimson Sentinel Helm',  gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_rare1_f.png',level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_rare1',   name:'Crimson Sentinel Plate', gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_rare1.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_rare1',   name:'Crimson Sentinel Greaves',gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_rare1.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_rare1',   name:'Crimson Sentinel Sabatons',gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_rare1.png',  level:25, rarity:'legendary', classes:['warrior'] },
+  // Set 2: Shadow Warden — near-black + electric teal
+  { id:'helmet_rare2',  name:'Shadow Warden Helm',     gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_rare2.png',  level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_rare2_f',name:'Shadow Warden Helm',     gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_rare2_f.png',level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_rare2',   name:'Shadow Warden Plate',    gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_rare2.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_rare2',   name:'Shadow Warden Greaves',  gender:'m', slot:'pants',  file:'sprites/preview_assets/char/pants_rare2.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_rare2',   name:'Shadow Warden Sabatons', gender:'m', slot:'boots',  file:'sprites/preview_assets/char/boots_rare2.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  // Set 3: Solar Paladin — bright gold + ivory visor
+  { id:'helmet_rare3',  name:'Solar Paladin Helm',     gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_rare3.png',  level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_rare3_f',name:'Solar Paladin Helm',     gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_rare3_f.png',level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_rare3',   name:'Solar Paladin Plate',    gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_rare3.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_rare3',   name:'Solar Paladin Greaves',  gender:'m', slot:'pants',  file:'sprites/preview_assets/char/pants_rare3.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_rare3',   name:'Solar Paladin Sabatons', gender:'m', slot:'boots',  file:'sprites/preview_assets/char/boots_rare3.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  // ── Mage tier 1: Apprentice Robes ────────────────────────────────
+  { id:'shirt_mage1',   name:'Apprentice Robe',     gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_mage1.png',   level:1, rarity:'common', classes:['mage'] },
+  { id:'pants_mage1',   name:'Apprentice Leggings', gender:'m', slot:'pants',  file:'sprites/preview_assets/char/pants_mage1.png',   level:1, rarity:'common', classes:['mage'] },
+  { id:'boots_mage1',   name:'Apprentice Boots',    gender:'m', slot:'boots',  file:'sprites/preview_assets/char/boots_mage1.png',   level:1, rarity:'common', classes:['mage'] },
+  { id:'helmet_mage1',  name:'Apprentice Hood',     gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage1.png',  level:1, rarity:'common', classes:['mage'] , hatType:'partial' },
+  // ── Ranger tier 1: Scout Leathers ────────────────────────────────
+  { id:'shirt_ranger1',  name:'Scout Tunic',    gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_ranger1.png',  level:1, rarity:'common', classes:['ranger'] },
+  { id:'pants_ranger1',  name:'Scout Breeches', gender:'m', slot:'pants',  file:'sprites/preview_assets/char/pants_ranger1.png',  level:1, rarity:'common', classes:['ranger'] },
+  { id:'boots_ranger1',  name:'Scout Boots',    gender:'m', slot:'boots',  file:'sprites/preview_assets/char/boots_ranger1.png',  level:1, rarity:'common', classes:['ranger'] },
+  { id:'helmet_ranger1', name:'Scout Hood',     gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger1.png', level:1, rarity:'common', classes:['ranger'] , hatType:'partial' },
+  // ── Mage tier 1 (female): Apprentice Robes ───────────────────────
+  { id:'shirt_mage1_f',   name:'Apprentice Robe',     gender:'f', slot:'shirt',  file:'sprites/preview_assets/char/shirt_mage1_f.png',   level:1, rarity:'common', classes:['mage'] },
+  { id:'pants_mage1_f',   name:'Apprentice Skirt',    gender:'f', slot:'pants',  skirt:true, file:'sprites/preview_assets/char/pants_mage1_f.png',   level:1, rarity:'common', classes:['mage'] },
+  { id:'boots_mage1_f',   name:'Apprentice Boots',    gender:'f', slot:'boots',  file:'sprites/preview_assets/char/boots_mage1_f.png',   level:1, rarity:'common', classes:['mage'] },
+  { id:'helmet_mage1_f',  name:'Apprentice Hood',     gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage1_f.png',  level:1, rarity:'common', classes:['mage'] , hatType:'partial' },
+  // ── Ranger tier 1 (female): Scout Leathers ───────────────────────
+  { id:'shirt_ranger1_f',  name:'Scout Tunic',    gender:'f', slot:'shirt',  file:'sprites/preview_assets/char/shirt_ranger1_f.png',  level:1, rarity:'common', classes:['ranger'] },
+  { id:'pants_ranger1_f',  name:'Scout Skirt',    gender:'f', slot:'pants',  skirt:true, file:'sprites/preview_assets/char/pants_ranger1_f.png',  level:1, rarity:'common', classes:['ranger'] },
+  { id:'boots_ranger1_f',  name:'Scout Boots',    gender:'f', slot:'boots',  file:'sprites/preview_assets/char/boots_ranger1_f.png',  level:1, rarity:'common', classes:['ranger'] },
+  { id:'helmet_ranger1_f', name:'Scout Hood',     gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger1_f.png', level:1, rarity:'common', classes:['ranger'] , hatType:'partial' },
+  // ── Mage tier 2: Apprentice Robes II ────────────────────────────────
+  { id:'shirt_mage2', name:'Apprentice Robes II', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage2.png', rarity:'common', classes:['mage'], level:5, gender:'m' },
+  { id:'shirt_mage2_f', name:'Apprentice Robes II', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage2_f.png', rarity:'common', classes:['mage'], level:5, gender:'f' },
+  { id:'pants_mage2', name:'Apprentice Robes II', slot:'pants', file:'sprites/preview_assets/char/pants_mage2.png', rarity:'common', classes:['mage'], level:5, gender:'m' },
+  { id:'pants_mage2_f', name:'Apprentice Robes II', slot:'pants', file:'sprites/preview_assets/char/pants_mage2_f.png', rarity:'common', classes:['mage'], level:5, gender:'f' },
+  { id:'boots_mage2', name:'Apprentice Robes II', slot:'boots', file:'sprites/preview_assets/char/boots_mage2.png', rarity:'common', classes:['mage'], level:5, gender:'m' },
+  { id:'boots_mage2_f', name:'Apprentice Robes II', slot:'boots', file:'sprites/preview_assets/char/boots_mage2_f.png', rarity:'common', classes:['mage'], level:5, gender:'f' },
+  { id:'helmet_mage2', name:'Apprentice Robes II', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage2.png', rarity:'common', classes:['mage'], level:5, gender:'m' , hatType:'partial' },
+  { id:'helmet_mage2_f', name:'Apprentice Robes II', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage2_f.png', rarity:'common', classes:['mage'], level:5, gender:'f' , hatType:'partial' },
+  // ── Mage tier 3: Journeyman Robes ────────────────────────────────
+  { id:'shirt_mage3', name:'Journeyman Robes', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage3.png', rarity:'common', classes:['mage'], level:10, gender:'m' },
+  { id:'shirt_mage3_f', name:'Journeyman Robes', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage3_f.png', rarity:'common', classes:['mage'], level:10, gender:'f' },
+  { id:'pants_mage3', name:'Journeyman Robes', slot:'pants', file:'sprites/preview_assets/char/pants_mage3.png', rarity:'common', classes:['mage'], level:10, gender:'m' },
+  { id:'pants_mage3_f', name:'Journeyman Robes', slot:'pants', file:'sprites/preview_assets/char/pants_mage3_f.png', rarity:'common', classes:['mage'], level:10, gender:'f' },
+  { id:'boots_mage3', name:'Journeyman Robes', slot:'boots', file:'sprites/preview_assets/char/boots_mage3.png', rarity:'common', classes:['mage'], level:10, gender:'m' },
+  { id:'boots_mage3_f', name:'Journeyman Robes', slot:'boots', file:'sprites/preview_assets/char/boots_mage3_f.png', rarity:'common', classes:['mage'], level:10, gender:'f' },
+  { id:'helmet_mage3', name:'Journeyman Robes', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage3.png', rarity:'common', classes:['mage'], level:10, gender:'m' , hatType:'partial' },
+  { id:'helmet_mage3_f', name:'Journeyman Robes', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage3_f.png', rarity:'common', classes:['mage'], level:10, gender:'f' , hatType:'partial' },
+  // ── Mage tier 4: Arcane Vestments ────────────────────────────────
+  { id:'shirt_mage4', name:'Arcane Vestments', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage4.png', rarity:'uncommon', classes:['mage'], level:20, gender:'m' },
+  { id:'shirt_mage4_f', name:'Arcane Vestments', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage4_f.png', rarity:'uncommon', classes:['mage'], level:20, gender:'f' },
+  { id:'pants_mage4', name:'Arcane Vestments', slot:'pants', file:'sprites/preview_assets/char/pants_mage4.png', rarity:'uncommon', classes:['mage'], level:20, gender:'m' },
+  { id:'pants_mage4_f', name:'Arcane Vestments', slot:'pants', file:'sprites/preview_assets/char/pants_mage4_f.png', rarity:'uncommon', classes:['mage'], level:20, gender:'f' },
+  { id:'boots_mage4', name:'Arcane Vestments', slot:'boots', file:'sprites/preview_assets/char/boots_mage4.png', rarity:'uncommon', classes:['mage'], level:20, gender:'m' },
+  { id:'boots_mage4_f', name:'Arcane Vestments', slot:'boots', file:'sprites/preview_assets/char/boots_mage4_f.png', rarity:'uncommon', classes:['mage'], level:20, gender:'f' },
+  { id:'helmet_mage4', name:'Arcane Vestments', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage4.png', rarity:'uncommon', classes:['mage'], level:20, gender:'m' , hatType:'partial' },
+  { id:'helmet_mage4_f', name:'Arcane Vestments', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage4_f.png', rarity:'uncommon', classes:['mage'], level:20, gender:'f' , hatType:'partial' },
+  // ── Mage tier 5: Elder Robes ────────────────────────────────
+  { id:'shirt_mage5', name:'Elder Robes', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage5.png', rarity:'rare', classes:['mage'], level:30, gender:'m' },
+  { id:'shirt_mage5_f', name:'Elder Robes', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage5_f.png', rarity:'rare', classes:['mage'], level:30, gender:'f' },
+  { id:'pants_mage5', name:'Elder Robes', slot:'pants', file:'sprites/preview_assets/char/pants_mage5.png', rarity:'rare', classes:['mage'], level:30, gender:'m' },
+  { id:'pants_mage5_f', name:'Elder Robes', slot:'pants', file:'sprites/preview_assets/char/pants_mage5_f.png', rarity:'rare', classes:['mage'], level:30, gender:'f' },
+  { id:'boots_mage5', name:'Elder Robes', slot:'boots', file:'sprites/preview_assets/char/boots_mage5.png', rarity:'rare', classes:['mage'], level:30, gender:'m' },
+  { id:'boots_mage5_f', name:'Elder Robes', slot:'boots', file:'sprites/preview_assets/char/boots_mage5_f.png', rarity:'rare', classes:['mage'], level:30, gender:'f' },
+  { id:'helmet_mage5', name:'Elder Robes', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage5.png', rarity:'rare', classes:['mage'], level:30, gender:'m' , hatType:'partial' },
+  { id:'helmet_mage5_f', name:'Elder Robes', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage5_f.png', rarity:'rare', classes:['mage'], level:30, gender:'f' , hatType:'partial' },
+  // ── Mage tier 6: Archmage Vestments ────────────────────────────────
+  { id:'shirt_mage6', name:'Archmage Vestments', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage6.png', rarity:'rare', classes:['mage'], level:40, gender:'m' },
+  { id:'shirt_mage6_f', name:'Archmage Vestments', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage6_f.png', rarity:'rare', classes:['mage'], level:40, gender:'f' },
+  { id:'pants_mage6', name:'Archmage Vestments', slot:'pants', file:'sprites/preview_assets/char/pants_mage6.png', rarity:'rare', classes:['mage'], level:40, gender:'m' },
+  { id:'pants_mage6_f', name:'Archmage Vestments', slot:'pants', file:'sprites/preview_assets/char/pants_mage6_f.png', rarity:'rare', classes:['mage'], level:40, gender:'f' },
+  { id:'boots_mage6', name:'Archmage Vestments', slot:'boots', file:'sprites/preview_assets/char/boots_mage6.png', rarity:'rare', classes:['mage'], level:40, gender:'m' },
+  { id:'boots_mage6_f', name:'Archmage Vestments', slot:'boots', file:'sprites/preview_assets/char/boots_mage6_f.png', rarity:'rare', classes:['mage'], level:40, gender:'f' },
+  { id:'helmet_mage6', name:'Archmage Vestments', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage6.png', rarity:'rare', classes:['mage'], level:40, gender:'m' , hatType:'partial' },
+  { id:'helmet_mage6_f', name:'Archmage Vestments', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage6_f.png', rarity:'rare', classes:['mage'], level:40, gender:'f' , hatType:'partial' },
+  // ── Ranger tier 2: Tracker Leathers II ────────────────────────────────
+  { id:'shirt_ranger2', name:'Tracker Leathers II', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger2.png', rarity:'common', classes:['ranger'], level:5, gender:'m' },
+  { id:'shirt_ranger2_f', name:'Tracker Leathers II', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger2_f.png', rarity:'common', classes:['ranger'], level:5, gender:'f' },
+  { id:'pants_ranger2', name:'Tracker Leathers II', slot:'pants', file:'sprites/preview_assets/char/pants_ranger2.png', rarity:'common', classes:['ranger'], level:5, gender:'m' },
+  { id:'pants_ranger2_f', name:'Tracker Leathers II', slot:'pants', file:'sprites/preview_assets/char/pants_ranger2_f.png', rarity:'common', classes:['ranger'], level:5, gender:'f' },
+  { id:'boots_ranger2', name:'Tracker Leathers II', slot:'boots', file:'sprites/preview_assets/char/boots_ranger2.png', rarity:'common', classes:['ranger'], level:5, gender:'m' },
+  { id:'boots_ranger2_f', name:'Tracker Leathers II', slot:'boots', file:'sprites/preview_assets/char/boots_ranger2_f.png', rarity:'common', classes:['ranger'], level:5, gender:'f' },
+  { id:'helmet_ranger2', name:'Tracker Leathers II', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger2.png', rarity:'common', classes:['ranger'], level:5, gender:'m' , hatType:'partial' },
+  { id:'helmet_ranger2_f', name:'Tracker Leathers II', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger2_f.png', rarity:'common', classes:['ranger'], level:5, gender:'f' , hatType:'partial' },
+  // ── Ranger tier 3: Pathfinder Gear ────────────────────────────────
+  { id:'shirt_ranger3', name:'Pathfinder Gear', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger3.png', rarity:'common', classes:['ranger'], level:10, gender:'m' },
+  { id:'shirt_ranger3_f', name:'Pathfinder Gear', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger3_f.png', rarity:'common', classes:['ranger'], level:10, gender:'f' },
+  { id:'pants_ranger3', name:'Pathfinder Gear', slot:'pants', file:'sprites/preview_assets/char/pants_ranger3.png', rarity:'common', classes:['ranger'], level:10, gender:'m' },
+  { id:'pants_ranger3_f', name:'Pathfinder Gear', slot:'pants', file:'sprites/preview_assets/char/pants_ranger3_f.png', rarity:'common', classes:['ranger'], level:10, gender:'f' },
+  { id:'boots_ranger3', name:'Pathfinder Gear', slot:'boots', file:'sprites/preview_assets/char/boots_ranger3.png', rarity:'common', classes:['ranger'], level:10, gender:'m' },
+  { id:'boots_ranger3_f', name:'Pathfinder Gear', slot:'boots', file:'sprites/preview_assets/char/boots_ranger3_f.png', rarity:'common', classes:['ranger'], level:10, gender:'f' },
+  { id:'helmet_ranger3', name:'Pathfinder Gear', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger3.png', rarity:'common', classes:['ranger'], level:10, gender:'m' , hatType:'partial' },
+  { id:'helmet_ranger3_f', name:'Pathfinder Gear', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger3_f.png', rarity:'common', classes:['ranger'], level:10, gender:'f' , hatType:'partial' },
+  // ── Ranger tier 4: Stalker Armor ────────────────────────────────
+  { id:'shirt_ranger4', name:'Stalker Armor', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger4.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'m' },
+  { id:'shirt_ranger4_f', name:'Stalker Armor', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger4_f.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'f' },
+  { id:'pants_ranger4', name:'Stalker Armor', slot:'pants', file:'sprites/preview_assets/char/pants_ranger4.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'m' },
+  { id:'pants_ranger4_f', name:'Stalker Armor', slot:'pants', file:'sprites/preview_assets/char/pants_ranger4_f.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'f' },
+  { id:'boots_ranger4', name:'Stalker Armor', slot:'boots', file:'sprites/preview_assets/char/boots_ranger4.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'m' },
+  { id:'boots_ranger4_f', name:'Stalker Armor', slot:'boots', file:'sprites/preview_assets/char/boots_ranger4_f.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'f' },
+  { id:'helmet_ranger4', name:'Stalker Armor', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger4.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'m' , hatType:'partial' },
+  { id:'helmet_ranger4_f', name:'Stalker Armor', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger4_f.png', rarity:'uncommon', classes:['ranger'], level:20, gender:'f' , hatType:'partial' },
+  // ── Ranger tier 5: Warden Armor ────────────────────────────────
+  { id:'shirt_ranger5', name:'Warden Armor', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger5.png', rarity:'rare', classes:['ranger'], level:30, gender:'m' },
+  { id:'shirt_ranger5_f', name:'Warden Armor', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger5_f.png', rarity:'rare', classes:['ranger'], level:30, gender:'f' },
+  { id:'pants_ranger5', name:'Warden Armor', slot:'pants', file:'sprites/preview_assets/char/pants_ranger5.png', rarity:'rare', classes:['ranger'], level:30, gender:'m' },
+  { id:'pants_ranger5_f', name:'Warden Armor', slot:'pants', file:'sprites/preview_assets/char/pants_ranger5_f.png', rarity:'rare', classes:['ranger'], level:30, gender:'f' },
+  { id:'boots_ranger5', name:'Warden Armor', slot:'boots', file:'sprites/preview_assets/char/boots_ranger5.png', rarity:'rare', classes:['ranger'], level:30, gender:'m' },
+  { id:'boots_ranger5_f', name:'Warden Armor', slot:'boots', file:'sprites/preview_assets/char/boots_ranger5_f.png', rarity:'rare', classes:['ranger'], level:30, gender:'f' },
+  { id:'helmet_ranger5', name:'Warden Armor', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger5.png', rarity:'rare', classes:['ranger'], level:30, gender:'m' , hatType:'partial' },
+  { id:'helmet_ranger5_f', name:'Warden Armor', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger5_f.png', rarity:'rare', classes:['ranger'], level:30, gender:'f' , hatType:'partial' },
+  // ── Ranger tier 6: Shadowstalker ────────────────────────────────
+  { id:'shirt_ranger6', name:'Shadowstalker', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger6.png', rarity:'rare', classes:['ranger'], level:40, gender:'m' },
+  { id:'shirt_ranger6_f', name:'Shadowstalker', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger6_f.png', rarity:'rare', classes:['ranger'], level:40, gender:'f' },
+  { id:'pants_ranger6', name:'Shadowstalker', slot:'pants', file:'sprites/preview_assets/char/pants_ranger6.png', rarity:'rare', classes:['ranger'], level:40, gender:'m' },
+  { id:'pants_ranger6_f', name:'Shadowstalker', slot:'pants', file:'sprites/preview_assets/char/pants_ranger6_f.png', rarity:'rare', classes:['ranger'], level:40, gender:'f' },
+  { id:'boots_ranger6', name:'Shadowstalker', slot:'boots', file:'sprites/preview_assets/char/boots_ranger6.png', rarity:'rare', classes:['ranger'], level:40, gender:'m' },
+  { id:'boots_ranger6_f', name:'Shadowstalker', slot:'boots', file:'sprites/preview_assets/char/boots_ranger6_f.png', rarity:'rare', classes:['ranger'], level:40, gender:'f' },
+  { id:'helmet_ranger6', name:'Shadowstalker', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger6.png', rarity:'rare', classes:['ranger'], level:40, gender:'m' , hatType:'partial' },
+  { id:'helmet_ranger6_f', name:'Shadowstalker', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger6_f.png', rarity:'rare', classes:['ranger'], level:40, gender:'f' , hatType:'partial' },
+  // ── Female warrior leggings (leg-fitted versions of the male tiers) ──
+  { id:'leather_pants_1_f', name:'Leather Leggings',         gender:'f', slot:'pants', file:'sprites/preview_assets/char/leather_pants_1_f.png', level:1  },
+  { id:'armor_pants_2_f',   name:'Studded Leather Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/armor_pants_2_f.png',   level:5  },
+  { id:'armor_pants_3_f',   name:'Chainmail Leggings',       gender:'f', slot:'pants', file:'sprites/preview_assets/char/armor_pants_3_f.png',   level:10 },
+  { id:'armor_pants_4_f',   name:'Silver Plate Leggings',    gender:'f', slot:'pants', file:'sprites/preview_assets/char/armor_pants_4_f.png',   level:20 },
+  { id:'armor_pants_5_f',   name:'Gold Plate Leggings',      gender:'f', slot:'pants', file:'sprites/preview_assets/char/armor_pants_5_f.png',   level:30 },
+  { id:'armor_pants_6_f',   name:'Diamond Plate Leggings',   gender:'f', slot:'pants', file:'sprites/preview_assets/char/armor_pants_6_f.png',   level:40 },
+  // ── Female warrior chest armor tiers (warped from the male tier sheets) ──
+  { id:'leather_armor_1_f', name:'Leather Armor',    gender:'f', slot:'shirt', file:'sprites/preview_assets/char/leather_armor_1_f.png', level:1,  classes:['warrior'] },
+  { id:'armor_chest_2_f',   name:'Studded Leather',  gender:'f', slot:'shirt', file:'sprites/preview_assets/char/armor_chest_2_f.png',   level:5,  classes:['warrior'] },
+  { id:'armor_chest_3_f',   name:'Chainmail',        gender:'f', slot:'shirt', file:'sprites/preview_assets/char/armor_chest_3_f.png',   level:10, classes:['warrior'] },
+  { id:'armor_chest_4_f',   name:'Silver Plate',     gender:'f', slot:'shirt', file:'sprites/preview_assets/char/armor_chest_4_f.png',   level:20, classes:['warrior'] },
+  { id:'armor_chest_5_f',   name:'Gold Plate',       gender:'f', slot:'shirt', file:'sprites/preview_assets/char/armor_chest_5_f.png',   level:30, classes:['warrior'] },
+  { id:'armor_chest_6_f',   name:'Diamond Plate',    gender:'f', slot:'shirt', file:'sprites/preview_assets/char/armor_chest_6_f.png',   level:40, classes:['warrior'] },
+  { id:'pants_rare1_f',     name:'Crimson Sentinel Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_rare1_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_rare2_f',     name:'Shadow Warden Greaves',    gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_rare2_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_rare3_f',     name:'Solar Paladin Greaves',    gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_rare3_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  // ── Female rare warrior chest armor + boots ──
+  { id:'shirt_rare1_f',     name:'Crimson Sentinel Plate',    gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_rare1_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_rare2_f',     name:'Shadow Warden Plate',       gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_rare2_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_rare3_f',     name:'Solar Paladin Plate',       gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_rare3_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_rare1_f',     name:'Crimson Sentinel Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_rare1_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_rare2_f',     name:'Shadow Warden Sabatons',    gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_rare2_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_rare3_f',     name:'Solar Paladin Sabatons',    gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_rare3_f.png',     level:25, rarity:'legendary', classes:['warrior'] },
+
+  // ── Hyper-Rare Legendary Sets ──────────────────────────────────────────
+  { id:'shirt_warrior_legendary1',   name:'Divine Seraph Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary1.png',   level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary1_f', name:'Divine Seraph Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary1_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+
+  // Legendary Hooded Capes (standalone cape shirts, no hood)
+  { id:'shirt_mage_legendary_hooded',  name:'Arcane Hooded Cape', gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_mage_legendary_hooded.png',  level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_ranger_legendary_hooded', name:'Shadow Hooded Cape',  gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_ranger_legendary_hooded.png', level:50, rarity:'legendary', classes:['ranger'] },
+  // Legendary Cowls (helmet slot: hood cap + cape baked in; hood type hides long/medium/ponytail
+  // hair via game logic but lets short/mohawk/man-bun hair show at the face opening)
+  { id:'helmet_mage_legendary_cowl', name:'Arcane Cowl', gender:'m', slot:'helmet', hatType:'hood', file:'sprites/preview_assets/char/helmet_mage_legendary_cowl.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'helmet_ranger_legendary_cowl', name:'Shadow Cowl', gender:'m', slot:'helmet', hatType:'hood', file:'sprites/preview_assets/char/helmet_ranger_legendary_cowl.png', level:50, rarity:'legendary', classes:['ranger'] },
+
   // ── Female ────────────────────────────────────────
   { id:'f_boots',          name:'Leather Boots',    gender:'f', slot:'boots', file:'sprites/preview_assets/clothing/female/Boots.png',              level:1 },
   { id:'f_socks',          name:'Wool Socks',        gender:'f', slot:'boots', file:'sprites/preview_assets/clothing/female/Socks.png',               level:1 },
   { id:'f_socks_green',    name:'Forest Socks',      gender:'f', slot:'boots', file:'sprites/preview_assets/clothing/female/Green_Socks.png',         level:1 },
   { id:'f_socks_orange',   name:'Ember Socks',       gender:'f', slot:'boots', file:'sprites/preview_assets/clothing/female/Orange_Socks.png',        level:1 },
   { id:'f_socks_purple',   name:'Shadow Socks',      gender:'f', slot:'boots', file:'sprites/preview_assets/clothing/female/Purple_Socks.png',        level:1 },
-  { id:'f_skirt',          name:'Adventurer Skirt',  gender:'f', slot:'pants', file:'sprites/preview_assets/clothing/female/Skirt.png',               level:1 },
+  { id:'f_skirt',          name:'Adventurer Skirt',  gender:'f', slot:'pants', skirt:true, file:'sprites/preview_assets/clothing/female/Skirt.png',               level:1 },
   { id:'f_corset',         name:'Warrior Corset',    gender:'f', slot:'shirt', file:'sprites/preview_assets/clothing/female/Corset.png',              level:1 },
   { id:'f_corset_v2',      name:'Warrior Corset II', gender:'f', slot:'shirt', file:'sprites/preview_assets/clothing/female/Corset_v2.png',           level:1 },
   { id:'f_corset_blue',    name:'Azure Corset',      gender:'f', slot:'shirt', file:'sprites/preview_assets/clothing/female/Blue_Corset.png',         level:1 },
@@ -2014,6 +2195,708 @@ var LOOT_TABLE = [
   { id:'f_corset_green2',  name:'Forest Corset II',  gender:'f', slot:'shirt', file:'sprites/preview_assets/clothing/female/Green_Corset_v2.png',     level:1 },
   { id:'f_corset_orange2', name:'Ember Corset II',   gender:'f', slot:'shirt', file:'sprites/preview_assets/clothing/female/Orange_Corset_v2.png',    level:1 },
   { id:'f_corset_purple2', name:'Shadow Corset II',  gender:'f', slot:'shirt', file:'sprites/preview_assets/clothing/female/Purple_Corset_v2.png',    level:1 },
+
+  // ── Deployed Legendary Sets (auto-generated) ──────────────────────────────
+  { id:'boots_mage_legendary_ajoure', name:'Ajoure Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_ajoure.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_ajoure_f', name:'Ajoure Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_ajoure_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_ashlar', name:'Ashlar Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_ashlar.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_ashlar_f', name:'Ashlar Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_ashlar_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_baldric', name:'Baldric Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_baldric.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_baldric_f', name:'Baldric Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_basket', name:'Basketweave Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_basket.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_basket_f', name:'Basketweave Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_basket_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cable', name:'Cable Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cable.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cable_f', name:'Cable Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cable_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cape', name:'Cape Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cape.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cape_f', name:'Cape Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cape_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cascade', name:'Cascade Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cascade.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cascade_f', name:'Cascade Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cascade_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_chevron', name:'Chevron Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_chevron.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_chevron_f', name:'Chevron Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_clasp', name:'Clasp Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_clasp.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_clasp_f', name:'Clasp Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_clasp_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_coffer', name:'Coffer Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_coffer.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_coffer_f', name:'Coffer Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_coffer_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_colophon', name:'Colophon Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_colophon.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_colophon_f', name:'Colophon Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_colophon_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cosmati', name:'Cosmati Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cosmati.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_cosmati_f', name:'Cosmati Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_cosmati_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_craquelure', name:'Craquelure Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_craquelure.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_craquelure_f', name:'Craquelure Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_craquelure_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_current', name:'Current Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_current.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_current_f', name:'Current Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_current_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_datum', name:'Datum Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_datum.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_datum_f', name:'Datum Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_datum_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_dendrite', name:'Dendrite Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_dendrite.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_dendrite_f', name:'Dendrite Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_dendrite_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_dentil', name:'Dentil Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_dentil.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_dentil_f', name:'Dentil Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_dentil_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_flowgrain', name:'Flowgrain Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_flowgrain.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_flowgrain_f', name:'Flowgrain Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_flowgrain_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_gambit', name:'Gambit Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_gambit.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_gambit_f', name:'Gambit Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_gambit_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_mage_winged', name:'Winged Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_mage_winged.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_mage_winged_f', name:'Winged Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_mage_winged_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_maze', name:'Labyrinth Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_maze.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_maze_f', name:'Labyrinth Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_maze_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_meander', name:'Meander Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_meander.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_meander_f', name:'Meander Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_meander_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_mokume', name:'Mokume Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_mokume.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_mokume_f', name:'Mokume Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_mokume_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_ogee', name:'Ogee Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_ogee.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_ogee_f', name:'Ogee Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_ogee_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_quorum', name:'Quorum Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_quorum.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_quorum_f', name:'Quorum Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_quorum_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_spiral', name:'Spiral Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_spiral.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_spiral_f', name:'Spiral Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_spiral_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_tally', name:'Tally Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_tally.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_tally_f', name:'Tally Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_tally_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_truss', name:'Truss Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_truss.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_truss_f', name:'Truss Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_truss_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_vortice', name:'Vortice Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_vortice.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_vortice_f', name:'Vortice Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_vortice_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_wing', name:'Winged Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_wing.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_mage_legendary_wing_f', name:'Winged Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_mage_legendary_wing_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'boots_ranger_legendary_ajoure', name:'Ajoure Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_ajoure.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_ajoure_f', name:'Ajoure Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_ajoure_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_ashlar', name:'Ashlar Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_ashlar.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_ashlar_f', name:'Ashlar Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_ashlar_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_baldric', name:'Baldric Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_baldric.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_baldric_f', name:'Baldric Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_basket', name:'Basketweave Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_basket.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_basket_f', name:'Basketweave Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_basket_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cable', name:'Cable Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cable.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cable_f', name:'Cable Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cable_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cape', name:'Cape Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cape.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cape_f', name:'Cape Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cape_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cascade', name:'Cascade Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cascade.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cascade_f', name:'Cascade Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cascade_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_chevron', name:'Chevron Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_chevron.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_chevron_f', name:'Chevron Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_clasp', name:'Clasp Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_clasp.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_clasp_f', name:'Clasp Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_clasp_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_coffer', name:'Coffer Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_coffer.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_coffer_f', name:'Coffer Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_coffer_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_colophon', name:'Colophon Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_colophon.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_colophon_f', name:'Colophon Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_colophon_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cosmati', name:'Cosmati Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cosmati.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_cosmati_f', name:'Cosmati Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_cosmati_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_craquelure', name:'Craquelure Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_craquelure.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_craquelure_f', name:'Craquelure Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_craquelure_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_current', name:'Current Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_current.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_current_f', name:'Current Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_current_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_datum', name:'Datum Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_datum.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_datum_f', name:'Datum Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_datum_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_dendrite', name:'Dendrite Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_dendrite.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_dendrite_f', name:'Dendrite Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_dendrite_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_dentil', name:'Dentil Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_dentil.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_dentil_f', name:'Dentil Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_dentil_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_flowgrain', name:'Flowgrain Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_flowgrain.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_flowgrain_f', name:'Flowgrain Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_flowgrain_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_gambit', name:'Gambit Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_gambit.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_gambit_f', name:'Gambit Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_gambit_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_maze', name:'Labyrinth Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_maze.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_maze_f', name:'Labyrinth Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_maze_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_meander', name:'Meander Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_meander.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_meander_f', name:'Meander Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_meander_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_mokume', name:'Mokume Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_mokume.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_mokume_f', name:'Mokume Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_mokume_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_ogee', name:'Ogee Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_ogee.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_ogee_f', name:'Ogee Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_ogee_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_quorum', name:'Quorum Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_quorum.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_quorum_f', name:'Quorum Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_quorum_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_spiral', name:'Spiral Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_spiral.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_spiral_f', name:'Spiral Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_spiral_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_tally', name:'Tally Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_tally.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_tally_f', name:'Tally Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_tally_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_truss', name:'Truss Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_truss.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_truss_f', name:'Truss Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_truss_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_vortice', name:'Vortice Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_vortice.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_vortice_f', name:'Vortice Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_vortice_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_wing', name:'Winged Treads', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_wing.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_ranger_legendary_wing_f', name:'Winged Treads', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_ranger_legendary_wing_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'boots_warrior_legendary_ajoure', name:'Ajoure Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_ajoure.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_ajoure_f', name:'Ajoure Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_ajoure_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_ashlar', name:'Ashlar Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_ashlar.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_ashlar_f', name:'Ashlar Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_ashlar_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_baldric', name:'Baldric Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_baldric.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_basket', name:'Basketweave Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_basket.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_basket_f', name:'Basketweave Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_basket_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cable', name:'Cable Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cable.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cable_f', name:'Cable Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cable_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cape', name:'Cape Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cape.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cascade', name:'Cascade Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cascade.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cascade_f', name:'Cascade Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cascade_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_chevron', name:'Chevron Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_chevron.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_clasp', name:'Clasp Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_clasp.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_clasp_f', name:'Clasp Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_clasp_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_coffer', name:'Coffer Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_coffer.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_coffer_f', name:'Coffer Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_coffer_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_colophon', name:'Colophon Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_colophon.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_colophon_f', name:'Colophon Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_colophon_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cosmati', name:'Cosmati Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cosmati.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_cosmati_f', name:'Cosmati Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_cosmati_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_craquelure', name:'Craquelure Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_craquelure.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_craquelure_f', name:'Craquelure Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_craquelure_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_current', name:'Current Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_current.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_current_f', name:'Current Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_current_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_datum', name:'Datum Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_datum.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_datum_f', name:'Datum Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_datum_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_dendrite', name:'Dendrite Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_dendrite.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_dendrite_f', name:'Dendrite Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_dendrite_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_dentil', name:'Dentil Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_dentil.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_dentil_f', name:'Dentil Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_dentil_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_flowgrain', name:'Flowgrain Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_flowgrain.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_flowgrain_f', name:'Flowgrain Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_flowgrain_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_gambit', name:'Gambit Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_gambit.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_gambit_f', name:'Gambit Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_gambit_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_horned', name:'Horned Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_horned.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_maze', name:'Labyrinth Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_maze.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_maze_f', name:'Labyrinth Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_maze_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_meander', name:'Meander Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_meander.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_meander_f', name:'Meander Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_meander_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_mokume', name:'Mokume Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_mokume.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_mokume_f', name:'Mokume Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_mokume_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_ogee', name:'Ogee Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_ogee.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_ogee_f', name:'Ogee Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_ogee_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_quorum', name:'Quorum Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_quorum.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_quorum_f', name:'Quorum Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_quorum_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_spiral', name:'Spiral Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_spiral.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_spiral_f', name:'Spiral Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_spiral_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_tally', name:'Tally Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_tally.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_tally_f', name:'Tally Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_tally_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_truss', name:'Truss Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_truss.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_truss_f', name:'Truss Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_truss_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_vortice', name:'Vortice Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_vortice.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_vortice_f', name:'Vortice Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_vortice_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_wing', name:'Winged Sabatons', gender:'m', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_wing.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'boots_warrior_legendary_wing_f', name:'Winged Sabatons', gender:'f', slot:'boots', file:'sprites/preview_assets/char/boots_warrior_legendary_wing_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_mage_legendary17', name:'Ashlar Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary17.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary17_f', name:'Ashlar Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary17_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary18', name:'Basketweave Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary18.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary18_f', name:'Basketweave Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary18_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary23', name:'Meander Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary23.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary23_f', name:'Meander Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary23_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary24', name:'Spiral Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary24.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary24_f', name:'Spiral Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary24_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary30', name:'Cable Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary30.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary30_f', name:'Cable Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary30_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary31', name:'Ogee Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary31.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary31_f', name:'Ogee Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary31_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary37', name:'Coffer Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary37.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary37_f', name:'Coffer Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary37_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary40', name:'Dentil Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary40.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary40_f', name:'Dentil Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary40_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary46', name:'Craquelure Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary46.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary46_f', name:'Craquelure Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary46_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary47', name:'Mokume Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary47.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary47_f', name:'Mokume Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary47_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary48', name:'Cosmati Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary48.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary48_f', name:'Cosmati Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary48_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary49', name:'Dendrite Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary49.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary49_f', name:'Dendrite Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary49_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary51', name:'Flowgrain Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary51.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary51_f', name:'Flowgrain Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary51_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary52', name:'Ajoure Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary52.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary52_f', name:'Ajoure Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary52_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary54', name:'Labyrinth Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary54.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary54_f', name:'Labyrinth Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary54_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary58', name:'Vortice Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary58.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary58_f', name:'Vortice Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary58_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary62', name:'Datum Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary62.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary62_f', name:'Datum Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary62_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary63', name:'Current Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary63.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary63_f', name:'Current Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary63_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary64', name:'Tally Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary64.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary64_f', name:'Tally Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary64_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary65', name:'Cascade Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary65.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary65_f', name:'Cascade Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary65_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary67', name:'Colophon Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary67.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary67_f', name:'Colophon Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary67_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary70', name:'Truss Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary70.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary70_f', name:'Truss Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary70_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary71', name:'Gambit Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary71.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary71_f', name:'Gambit Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary71_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary72', name:'Quorum Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary72.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary72_f', name:'Quorum Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary72_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary77', name:'Clasp Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary77.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary77_f', name:'Clasp Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary77_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_baldric', name:'Baldric Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_baldric.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_baldric_f', name:'Baldric Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_cape', name:'Cape Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_cape.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_cape_f', name:'Cape Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_cape_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_chevron', name:'Chevron Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_chevron.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_chevron_f', name:'Chevron Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_mage_winged', name:'Winged Crown', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_mage_winged.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_mage_legendary_mage_winged_f', name:'Winged Crown', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_mage_legendary_mage_winged_f.png', level:50, rarity:'legendary', classes:['mage'], hatType:'partial' },
+  { id:'helmet_ranger_legendary17', name:'Ashlar Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary17.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary17_f', name:'Ashlar Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary17_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary18', name:'Basketweave Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary18.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary18_f', name:'Basketweave Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary18_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary23', name:'Meander Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary23.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary23_f', name:'Meander Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary23_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary24', name:'Spiral Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary24.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary24_f', name:'Spiral Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary24_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary30', name:'Cable Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary30.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary30_f', name:'Cable Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary30_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary31', name:'Ogee Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary31.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary31_f', name:'Ogee Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary31_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary37', name:'Coffer Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary37.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary37_f', name:'Coffer Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary37_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary40', name:'Dentil Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary40.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary40_f', name:'Dentil Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary40_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary46', name:'Craquelure Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary46.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary46_f', name:'Craquelure Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary46_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary47', name:'Mokume Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary47.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary47_f', name:'Mokume Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary47_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary48', name:'Cosmati Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary48.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary48_f', name:'Cosmati Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary48_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary49', name:'Dendrite Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary49.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary49_f', name:'Dendrite Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary49_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary51', name:'Flowgrain Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary51.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary51_f', name:'Flowgrain Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary51_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary52', name:'Ajoure Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary52.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary52_f', name:'Ajoure Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary52_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary54', name:'Labyrinth Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary54.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary54_f', name:'Labyrinth Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary54_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary58', name:'Vortice Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary58.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary58_f', name:'Vortice Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary58_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary62', name:'Datum Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary62.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary62_f', name:'Datum Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary62_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary63', name:'Current Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary63.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary63_f', name:'Current Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary63_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary64', name:'Tally Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary64.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary64_f', name:'Tally Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary64_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary65', name:'Cascade Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary65.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary65_f', name:'Cascade Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary65_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary67', name:'Colophon Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary67.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary67_f', name:'Colophon Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary67_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary70', name:'Truss Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary70.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary70_f', name:'Truss Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary70_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary71', name:'Gambit Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary71.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary71_f', name:'Gambit Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary71_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary72', name:'Quorum Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary72.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary72_f', name:'Quorum Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary72_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary77', name:'Clasp Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary77.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary77_f', name:'Clasp Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary77_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary_baldric', name:'Baldric Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary_baldric.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary_baldric_f', name:'Baldric Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary_cape', name:'Cape Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary_cape.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary_cape_f', name:'Cape Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary_cape_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary_chevron', name:'Chevron Hood', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary_chevron.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_ranger_legendary_chevron_f', name:'Chevron Hood', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_ranger_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['ranger'], hatType:'partial' },
+  { id:'helmet_warrior_legendary1', name:'Horned Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary1.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary17', name:'Ashlar Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary17.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary17_f', name:'Ashlar Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary17_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary18', name:'Basketweave Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary18.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary18_f', name:'Basketweave Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary18_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary1_f', name:'Horned Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary1_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary23', name:'Meander Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary23.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary23_f', name:'Meander Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary23_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary24', name:'Spiral Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary24.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary24_f', name:'Spiral Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary24_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary30', name:'Cable Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary30.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary30_f', name:'Cable Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary30_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary31', name:'Ogee Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary31.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary31_f', name:'Ogee Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary31_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary37', name:'Coffer Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary37.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary37_f', name:'Coffer Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary37_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary40', name:'Dentil Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary40.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary40_f', name:'Dentil Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary40_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary46', name:'Craquelure Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary46.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary46_f', name:'Craquelure Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary46_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary47', name:'Mokume Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary47.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary47_f', name:'Mokume Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary47_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary48', name:'Cosmati Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary48.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary48_f', name:'Cosmati Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary48_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary49', name:'Dendrite Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary49.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary49_f', name:'Dendrite Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary49_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary51', name:'Flowgrain Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary51.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary51_f', name:'Flowgrain Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary51_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary52', name:'Ajoure Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary52.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary52_f', name:'Ajoure Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary52_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary54', name:'Labyrinth Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary54.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary54_f', name:'Labyrinth Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary54_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary58', name:'Vortice Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary58.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary58_f', name:'Vortice Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary58_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary62', name:'Datum Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary62.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary62_f', name:'Datum Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary62_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary63', name:'Current Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary63.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary63_f', name:'Current Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary63_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary64', name:'Tally Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary64.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary64_f', name:'Tally Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary64_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary65', name:'Cascade Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary65.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary65_f', name:'Cascade Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary65_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary67', name:'Colophon Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary67.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary67_f', name:'Colophon Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary67_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary70', name:'Truss Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary70.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary70_f', name:'Truss Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary70_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary71', name:'Gambit Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary71.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary71_f', name:'Gambit Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary71_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary72', name:'Quorum Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary72.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary72_f', name:'Quorum Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary72_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary77', name:'Clasp Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary77.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary77_f', name:'Clasp Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary77_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_baldric', name:'Baldric Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_baldric.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_baldric_f', name:'Baldric Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_cape', name:'Cape Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_cape.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_cape_f', name:'Cape Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_cape_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_chevron', name:'Chevron Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_chevron.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_chevron_f', name:'Chevron Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_winged', name:'Winged Helm', gender:'m', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_winged.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'helmet_warrior_legendary_winged_f', name:'Winged Helm', gender:'f', slot:'helmet', file:'sprites/preview_assets/char/helmet_warrior_legendary_winged_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_mage_legendary17', name:'Ashlar Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary17.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary17_f', name:'Ashlar Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary17_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary18', name:'Basketweave Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary18.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary18_f', name:'Basketweave Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary18_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary23', name:'Meander Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary23.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary23_f', name:'Meander Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary23_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary24', name:'Spiral Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary24.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary24_f', name:'Spiral Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary24_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary30', name:'Cable Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary30.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary30_f', name:'Cable Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary30_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary31', name:'Ogee Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary31.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary31_f', name:'Ogee Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary31_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary37', name:'Coffer Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary37.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary37_f', name:'Coffer Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary37_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary40', name:'Dentil Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary40.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary40_f', name:'Dentil Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary40_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary46', name:'Craquelure Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary46.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary46_f', name:'Craquelure Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary46_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary47', name:'Mokume Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary47.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary47_f', name:'Mokume Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary47_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary48', name:'Cosmati Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary48.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary48_f', name:'Cosmati Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary48_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary49', name:'Dendrite Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary49.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary49_f', name:'Dendrite Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary49_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary51', name:'Flowgrain Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary51.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary51_f', name:'Flowgrain Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary51_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary52', name:'Ajoure Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary52.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary52_f', name:'Ajoure Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary52_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary54', name:'Labyrinth Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary54.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary54_f', name:'Labyrinth Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary54_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary58', name:'Vortice Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary58.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary58_f', name:'Vortice Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary58_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary62', name:'Datum Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary62.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary62_f', name:'Datum Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary62_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary63', name:'Current Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary63.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary63_f', name:'Current Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary63_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary64', name:'Tally Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary64.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary64_f', name:'Tally Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary64_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary65', name:'Cascade Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary65.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary65_f', name:'Cascade Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary65_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary67', name:'Colophon Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary67.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary67_f', name:'Colophon Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary67_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary70', name:'Truss Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary70.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary70_f', name:'Truss Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary70_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary71', name:'Gambit Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary71.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary71_f', name:'Gambit Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary71_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary72', name:'Quorum Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary72.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary72_f', name:'Quorum Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary72_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary77', name:'Clasp Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary77.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary77_f', name:'Clasp Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary77_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_baldric', name:'Baldric Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_baldric.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_baldric_f', name:'Baldric Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_cape', name:'Cape Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_cape.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_cape_f', name:'Cape Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_cape_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_chevron', name:'Chevron Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_chevron.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_chevron_f', name:'Chevron Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_mage_winged', name:'Winged Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_mage_winged.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_mage_legendary_mage_winged_f', name:'Winged Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_mage_legendary_mage_winged_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'pants_ranger_legendary17', name:'Ashlar Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary17.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary17_f', name:'Ashlar Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary17_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary18', name:'Basketweave Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary18.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary18_f', name:'Basketweave Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary18_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary23', name:'Meander Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary23.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary23_f', name:'Meander Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary23_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary24', name:'Spiral Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary24.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary24_f', name:'Spiral Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary24_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary30', name:'Cable Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary30.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary30_f', name:'Cable Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary30_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary31', name:'Ogee Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary31.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary31_f', name:'Ogee Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary31_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary37', name:'Coffer Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary37.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary37_f', name:'Coffer Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary37_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary40', name:'Dentil Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary40.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary40_f', name:'Dentil Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary40_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary46', name:'Craquelure Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary46.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary46_f', name:'Craquelure Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary46_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary47', name:'Mokume Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary47.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary47_f', name:'Mokume Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary47_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary48', name:'Cosmati Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary48.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary48_f', name:'Cosmati Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary48_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary49', name:'Dendrite Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary49.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary49_f', name:'Dendrite Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary49_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary51', name:'Flowgrain Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary51.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary51_f', name:'Flowgrain Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary51_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary52', name:'Ajoure Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary52.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary52_f', name:'Ajoure Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary52_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary54', name:'Labyrinth Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary54.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary54_f', name:'Labyrinth Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary54_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary58', name:'Vortice Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary58.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary58_f', name:'Vortice Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary58_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary62', name:'Datum Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary62.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary62_f', name:'Datum Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary62_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary63', name:'Current Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary63.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary63_f', name:'Current Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary63_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary64', name:'Tally Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary64.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary64_f', name:'Tally Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary64_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary65', name:'Cascade Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary65.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary65_f', name:'Cascade Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary65_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary67', name:'Colophon Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary67.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary67_f', name:'Colophon Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary67_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary70', name:'Truss Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary70.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary70_f', name:'Truss Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary70_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary71', name:'Gambit Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary71.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary71_f', name:'Gambit Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary71_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary72', name:'Quorum Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary72.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary72_f', name:'Quorum Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary72_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary77', name:'Clasp Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary77.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary77_f', name:'Clasp Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary77_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary_baldric', name:'Baldric Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary_baldric.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary_baldric_f', name:'Baldric Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary_cape', name:'Cape Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary_cape.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary_cape_f', name:'Cape Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary_cape_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary_chevron', name:'Chevron Leggings', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary_chevron.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_ranger_legendary_chevron_f', name:'Chevron Leggings', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_ranger_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'pants_warrior_legendary17', name:'Ashlar Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary17.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary17_f', name:'Ashlar Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary17_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary18', name:'Basketweave Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary18.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary18_f', name:'Basketweave Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary18_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary23', name:'Meander Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary23.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary23_f', name:'Meander Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary23_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary24', name:'Spiral Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary24.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary24_f', name:'Spiral Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary24_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary30', name:'Cable Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary30.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary30_f', name:'Cable Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary30_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary31', name:'Ogee Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary31.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary31_f', name:'Ogee Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary31_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary37', name:'Coffer Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary37.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary37_f', name:'Coffer Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary37_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary40', name:'Dentil Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary40.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary40_f', name:'Dentil Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary40_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary46', name:'Craquelure Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary46.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary46_f', name:'Craquelure Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary46_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary47', name:'Mokume Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary47.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary47_f', name:'Mokume Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary47_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary48', name:'Cosmati Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary48.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary48_f', name:'Cosmati Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary48_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary49', name:'Dendrite Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary49.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary49_f', name:'Dendrite Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary49_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary51', name:'Flowgrain Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary51.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary51_f', name:'Flowgrain Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary51_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary52', name:'Ajoure Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary52.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary52_f', name:'Ajoure Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary52_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary54', name:'Labyrinth Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary54.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary54_f', name:'Labyrinth Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary54_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary58', name:'Vortice Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary58.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary58_f', name:'Vortice Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary58_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary62', name:'Datum Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary62.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary62_f', name:'Datum Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary62_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary63', name:'Current Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary63.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary63_f', name:'Current Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary63_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary64', name:'Tally Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary64.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary64_f', name:'Tally Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary64_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary65', name:'Cascade Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary65.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary65_f', name:'Cascade Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary65_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary67', name:'Colophon Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary67.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary67_f', name:'Colophon Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary67_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary70', name:'Truss Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary70.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary70_f', name:'Truss Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary70_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary71', name:'Gambit Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary71.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary71_f', name:'Gambit Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary71_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary72', name:'Quorum Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary72.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary72_f', name:'Quorum Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary72_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary77', name:'Clasp Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary77.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary77_f', name:'Clasp Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary77_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_baldric', name:'Baldric Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_baldric.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_baldric_f', name:'Baldric Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_baldric_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_cape', name:'Cape Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_cape.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_cape_f', name:'Cape Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_cape_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_chevron', name:'Chevron Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_chevron.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_chevron_f', name:'Chevron Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_chevron_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_winged', name:'Winged Greaves', gender:'m', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_winged.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'pants_warrior_legendary_winged_f', name:'Winged Greaves', gender:'f', slot:'pants', file:'sprites/preview_assets/char/pants_warrior_legendary_winged_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_mage_legendary1', name:'Winged Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary1.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary13', name:'Brigandine Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary13.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary13_f', name:'Brigandine Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary13_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary17', name:'Ashlar Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary17.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary17_f', name:'Ashlar Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary17_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary18', name:'Basketweave Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary18.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary18_f', name:'Basketweave Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary18_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary1_f', name:'Winged Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary1_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary23', name:'Meander Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary23.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary23_f', name:'Meander Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary23_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary24', name:'Spiral Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary24.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary24_f', name:'Spiral Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary24_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary3', name:'Cape Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary3.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary30', name:'Cable Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary30.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary30_f', name:'Cable Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary30_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary31', name:'Ogee Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary31.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary31_f', name:'Ogee Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary31_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary37', name:'Coffer Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary37.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary37_f', name:'Coffer Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary37_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary3_f', name:'Cape Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary3_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary40', name:'Dentil Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary40.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary40_f', name:'Dentil Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary40_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary46', name:'Craquelure Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary46.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary46_f', name:'Craquelure Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary46_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary47', name:'Mokume Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary47.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary47_f', name:'Mokume Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary47_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary48', name:'Cosmati Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary48.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary48_f', name:'Cosmati Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary48_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary49', name:'Dendrite Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary49.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary49_f', name:'Dendrite Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary49_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary51', name:'Flowgrain Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary51.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary51_f', name:'Flowgrain Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary51_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary52', name:'Ajoure Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary52.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary52_f', name:'Ajoure Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary52_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary54', name:'Labyrinth Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary54.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary54_f', name:'Labyrinth Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary54_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary58', name:'Vortice Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary58.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary58_f', name:'Vortice Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary58_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary6', name:'Baldric Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary6.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary62', name:'Datum Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary62.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary62_f', name:'Datum Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary62_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary63', name:'Current Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary63.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary63_f', name:'Current Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary63_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary64', name:'Tally Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary64.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary64_f', name:'Tally Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary64_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary65', name:'Cascade Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary65.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary65_f', name:'Cascade Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary65_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary67', name:'Colophon Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary67.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary67_f', name:'Colophon Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary67_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary6_f', name:'Baldric Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary6_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary70', name:'Truss Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary70.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary70_f', name:'Truss Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary70_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary71', name:'Gambit Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary71.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary71_f', name:'Gambit Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary71_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary72', name:'Quorum Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary72.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary72_f', name:'Quorum Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary72_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary77', name:'Clasp Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary77.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary77_f', name:'Clasp Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary77_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary9', name:'Chevron Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary9.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary9_f', name:'Chevron Vestments', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary9_f.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_mage_legendary_cape', name:'Cape Vestments', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_mage_legendary_cape.png', level:50, rarity:'legendary', classes:['mage'] },
+  { id:'shirt_ranger_legendary13', name:'Brigandine Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary13.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary13_f', name:'Brigandine Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary13_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary17', name:'Ashlar Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary17.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary17_f', name:'Ashlar Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary17_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary18', name:'Basketweave Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary18.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary18_f', name:'Basketweave Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary18_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary23', name:'Meander Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary23.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary23_f', name:'Meander Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary23_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary24', name:'Spiral Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary24.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary24_f', name:'Spiral Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary24_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary3', name:'Cape Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary3.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary30', name:'Cable Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary30.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary30_f', name:'Cable Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary30_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary31', name:'Ogee Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary31.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary31_f', name:'Ogee Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary31_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary37', name:'Coffer Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary37.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary37_f', name:'Coffer Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary37_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary3_f', name:'Cape Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary3_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary40', name:'Dentil Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary40.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary40_f', name:'Dentil Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary40_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary46', name:'Craquelure Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary46.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary46_f', name:'Craquelure Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary46_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary47', name:'Mokume Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary47.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary47_f', name:'Mokume Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary47_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary48', name:'Cosmati Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary48.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary48_f', name:'Cosmati Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary48_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary49', name:'Dendrite Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary49.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary49_f', name:'Dendrite Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary49_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary51', name:'Flowgrain Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary51.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary51_f', name:'Flowgrain Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary51_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary52', name:'Ajoure Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary52.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary52_f', name:'Ajoure Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary52_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary54', name:'Labyrinth Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary54.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary54_f', name:'Labyrinth Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary54_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary58', name:'Vortice Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary58.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary58_f', name:'Vortice Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary58_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary6', name:'Baldric Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary6.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary62', name:'Datum Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary62.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary62_f', name:'Datum Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary62_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary63', name:'Current Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary63.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary63_f', name:'Current Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary63_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary64', name:'Tally Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary64.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary64_f', name:'Tally Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary64_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary65', name:'Cascade Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary65.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary65_f', name:'Cascade Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary65_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary67', name:'Colophon Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary67.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary67_f', name:'Colophon Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary67_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary6_f', name:'Baldric Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary6_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary70', name:'Truss Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary70.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary70_f', name:'Truss Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary70_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary71', name:'Gambit Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary71.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary71_f', name:'Gambit Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary71_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary72', name:'Quorum Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary72.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary72_f', name:'Quorum Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary72_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary77', name:'Clasp Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary77.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary77_f', name:'Clasp Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary77_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary9', name:'Chevron Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary9.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary9_f', name:'Chevron Jerkin', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary9_f.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_ranger_legendary_cape', name:'Cape Jerkin', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_ranger_legendary_cape.png', level:50, rarity:'legendary', classes:['ranger'] },
+  { id:'shirt_warrior_legendary13', name:'Brigandine Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary13.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary13_f', name:'Brigandine Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary13_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary17', name:'Ashlar Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary17.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary17_f', name:'Ashlar Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary17_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary18', name:'Basketweave Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary18.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary18_f', name:'Basketweave Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary18_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary23', name:'Meander Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary23.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary23_f', name:'Meander Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary23_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary24', name:'Spiral Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary24.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary24_f', name:'Spiral Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary24_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary3', name:'Cape Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary3.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary30', name:'Cable Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary30.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary30_f', name:'Cable Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary30_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary31', name:'Ogee Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary31.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary31_f', name:'Ogee Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary31_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary37', name:'Coffer Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary37.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary37_f', name:'Coffer Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary37_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary3_f', name:'Cape Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary3_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary40', name:'Dentil Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary40.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary40_f', name:'Dentil Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary40_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary46', name:'Craquelure Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary46.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary46_f', name:'Craquelure Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary46_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary47', name:'Mokume Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary47.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary47_f', name:'Mokume Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary47_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary48', name:'Cosmati Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary48.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary48_f', name:'Cosmati Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary48_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary49', name:'Dendrite Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary49.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary49_f', name:'Dendrite Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary49_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary51', name:'Flowgrain Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary51.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary51_f', name:'Flowgrain Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary51_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary52', name:'Ajoure Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary52.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary52_f', name:'Ajoure Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary52_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary54', name:'Labyrinth Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary54.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary54_f', name:'Labyrinth Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary54_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary58', name:'Vortice Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary58.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary58_f', name:'Vortice Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary58_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary6', name:'Baldric Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary6.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary62', name:'Datum Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary62.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary62_f', name:'Datum Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary62_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary63', name:'Current Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary63.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary63_f', name:'Current Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary63_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary64', name:'Tally Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary64.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary64_f', name:'Tally Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary64_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary65', name:'Cascade Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary65.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary65_f', name:'Cascade Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary65_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary67', name:'Colophon Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary67.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary67_f', name:'Colophon Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary67_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary6_f', name:'Baldric Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary6_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary70', name:'Truss Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary70.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary70_f', name:'Truss Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary70_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary71', name:'Gambit Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary71.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary71_f', name:'Gambit Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary71_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary72', name:'Quorum Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary72.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary72_f', name:'Quorum Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary72_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary77', name:'Clasp Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary77.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary77_f', name:'Clasp Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary77_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary9', name:'Chevron Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary9.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary9_f', name:'Chevron Plate', gender:'f', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary9_f.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary_cape', name:'Cape Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary_cape.png', level:50, rarity:'legendary', classes:['warrior'] },
+  { id:'shirt_warrior_legendary_winged_cape', name:'Winged Cape Plate', gender:'m', slot:'shirt', file:'sprites/preview_assets/char/shirt_warrior_legendary_winged_cape.png', level:50, rarity:'legendary', classes:['warrior'] },
 ];
 
 function toggleDevMode() {
@@ -2039,8 +2922,11 @@ function rollLoot() {
   if (completed === 0 || completed % 3 !== 0) return null;
   var g = S.customization.gender || 'm';
   var level = S.profile.level || 1;
+  var cls = S.customization.charClass || 'warrior';
   var eligible = LOOT_TABLE.filter(function(x) {
-    return x.gender === g && x.level <= level;
+    // Items with no classes field (or empty array) drop for every class
+    var classOk = !x.classes || x.classes.length === 0 || x.classes.indexOf(cls) >= 0;
+    return x.gender === g && x.level <= level && classOk;
   });
   if (!eligible.length) return null;
   // Exclude already-owned items if there are still new ones available
@@ -2101,15 +2987,19 @@ function renderInventory() {
   var inv = S.profile.inventory || [];
   var eq  = S.profile.equippedItems || {};
   var g   = S.customization.gender || 'm';
+  var cls = S.customization.charClass || 'warrior';
+  function classOk(it) {
+    return !it.classes || it.classes.length === 0 || it.classes.indexOf(cls) >= 0;
+  }
 
-  // DEV_MODE: show all LOOT_TABLE items for current gender, ignoring drops
+  // DEV_MODE: show all LOOT_TABLE items for current gender+class, ignoring drops
   var genderedInv;
   if (DEV_MODE) {
-    genderedInv = LOOT_TABLE.filter(function(it) { return it.gender === g; }).map(function(it) { return it.id; });
+    genderedInv = LOOT_TABLE.filter(function(it) { return it.gender === g && classOk(it); }).map(function(it) { return it.id; });
   } else {
     genderedInv = inv.filter(function(id) {
       var it = LOOT_TABLE.find(function(x){ return x.id === id; });
-      return it && it.gender === g;
+      return it && it.gender === g && classOk(it);
     });
   }
 
@@ -2134,8 +3024,10 @@ function renderInventory() {
       + '<div class="inv-grid">';
     items.forEach(function(item) {
       var isEq = eq[item.slot] === item.id;
+      var sprOffsets = { helmet:'0px -3px', shirt:'0px -28px', pants:'0px -38px', boots:'0px -46px' };
+      var sprPos = sprOffsets[item.slot] || '0px 0px';
       html += '<div class="inv-item'+(isEq?' equipped':'')+'" onclick="equipItem(\''+item.id+'\')" title="'+(isEq?'Unequip':'Equip')+': '+item.name+'">'
-        + '<div class="inv-item-spr" style="background-image:'+cssUrl(item.file)+';background-position:0px 0px"></div>'
+        + '<div class="inv-item-spr" style="background-image:'+cssUrl(item.file)+';background-position:'+sprPos+'"></div>'
         + '<div class="inv-item-lbl">'+(isEq?'✓ ':'')+item.name+'</div>'
         + '</div>';
     });
@@ -2191,6 +3083,8 @@ function openCombatOverlay(xpEarned, goldEarned, lootItem) {
     var el = document.getElementById(heroMap[k]);
     if (el) { el.style.backgroundImage = layers[k] ? cssUrl(layers[k]) : 'none'; el.style.backgroundSize = '800px 448px'; }
   });
+  applyLegLayerOrder();
+  applyHairClipToId('coHair');
 
   // Start enemy portal animation
   _coPortalFrame = 0;
@@ -2694,18 +3588,178 @@ function getCharLayers() {
   function lootFile(slot) {
     if (!eq[slot]) return null;
     var it = LOOT_TABLE.find(function(x){ return x.id === eq[slot]; });
-    return it ? it.file : null;
+    if (!it) return null;
+    // Don't render cross-gender sprites — male-shaped armor misaligns on the
+    // female body (bare legs / floating boots) and vice versa.
+    if (it.gender && it.gender !== g) return null;
+    return it.file;
   }
   var helmetFile = lootFile('helmet') || null;
+  // Partial hats (cone/Robin Hood) only cover the top — hair shows at sides
+  var helmetItem = helmetFile && eq.helmet
+    ? LOOT_TABLE.find(function(x){ return x.id === eq.helmet; }) : null;
+  var helmetIsPartial = !!(helmetItem && helmetItem.hatType === 'partial');
+  var helmetIsHood    = !!(helmetItem && helmetItem.hatType === 'hood');
+  var hideHair = helmetFile && !helmetIsPartial && !helmetIsHood;
+  // Hood: long/medium/ponytail (styles 2-4) render as short (style 1, same color).
+  // Mohawk (5), man-bun (6), and short (1) are fine as-is.
+  var hairStyle = c.hairStyle || 1;
+  var hoodStyle = (helmetIsHood && hairStyle >= 2 && hairStyle <= 4) ? 1 : hairStyle;
   return {
     boots: lootFile('boots') || null,
     pants: lootFile('pants') || null,
     shirt: lootFile('shirt') || null,
     skin:  p + 'skin_' + g + sn + '.png',
     sword: p + 'sword_' + g + '.png',
-    hair:  helmetFile ? null : p + 'hair_' + g + (((c.hairStyle||1) - 1) * 5 + hn) + '.png',
+    hair:  hideHair ? null : p + 'hair_' + g + ((hoodStyle - 1) * 5 + hn) + '.png',
     helmet: helmetFile,
   };
+}
+
+// ── Boot/pants stacking ─────────────────────────────
+// Trousers render BELOW boots (boots cover the trouser cuff, fixes boot
+// bleed-through). Skirts render ABOVE boots (the hem hangs over the boot
+// shaft and must not be clipped). Skirt items carry skirt:true in LOOT_TABLE;
+// female leggings/trousers behave like male trousers (tuck under boots).
+function isSkirtEquipped() {
+  var eq = S.profile.equippedItems || {};
+  if (!eq.pants) return false;
+  var it = LOOT_TABLE.find(function(x){ return x.id === eq.pants; });
+  if (!it) return false;
+  // Only counts if the sprite actually renders (gender matches — see getCharLayers)
+  var g = S.customization.gender || 'm';
+  if (it.gender && it.gender !== g) return false;
+  return it.slot === 'pants' && it.skirt === true;
+}
+
+// Apply explicit inline z-index to every character layer in every scene.
+// z-index (not DOM reordering) so the stacking survives any re-render and
+// never depends on element order. Layers are position:absolute inside a
+// transformed wrap (own stacking context), so these values are self-contained.
+// Bottom→top: skin, legs (pants/boots swap on skirt), shirt, sword, hair, helmet.
+var CHAR_LAYER_PREFIXES = ['qs','hs','co','av'];
+
+// Hair file numbers that have pixels above y=20 (i.e. they poke through partial hats).
+// fileNum = ((hairStyle-1)*5) + hairNum.  Male styles 1-5 (m1-m25) and female style 4
+// (f16-f20) were verified tall via PIL pixel analysis (min_y < 20 in frame 0).
+// Brim row: male y=21, female y=22 (exact head_top from skin sprites).
+var TALL_HAIR_NUMS = {
+  m: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
+  f: [16,17,18,19,20]
+};
+var BRIM_Y = { m: 21, f: 22 };
+
+// Per-frame skull rectangles for partial-hat hair masking, measured with PIL
+// from skin_m1/skin_f1 (head tracked via the hat sprite's x-span per frame).
+// "row,col": [skullLeft, skullRight, headTop] in sprite coords (80x64 frames).
+// Frames NOT in this table have no hat pixels drawn (e.g. sleep frames 6,8-6,9),
+// so the hair is left untouched there.
+var HAIR_MASK_FRAMES = {
+  m:{"0,0":[36,44,21],"0,1":[36,44,21],"0,2":[36,44,20],"0,3":[36,44,20],"0,4":[36,44,20],"1,0":[36,44,21],"1,1":[36,44,21],"1,2":[36,44,20],"1,3":[36,44,20],"1,4":[36,44,21],"1,5":[36,44,21],"1,6":[36,44,20],"1,7":[36,44,20],"2,0":[34,42,20],"2,1":[34,42,21],"2,2":[34,42,20],"2,3":[34,42,20],"2,4":[34,42,20],"2,5":[34,42,21],"2,6":[34,42,20],"2,7":[34,42,20],"3,0":[34,42,17],"3,1":[34,42,17],"3,2":[34,42,17],"3,3":[34,42,17],"4,0":[34,43,17],"4,1":[34,43,17],"4,2":[34,43,17],"4,3":[34,43,17],"5,0":[36,44,21],"5,1":[37,45,21],"5,2":[41,49,20],"5,3":[41,49,20],"5,4":[33,41,23],"5,5":[33,41,21],"6,0":[36,44,21],"6,1":[34,42,23],"6,2":[30,38,28],"6,3":[28,36,29],"6,4":[29,37,28],"6,5":[26,34,29],"6,6":[23,31,29]},
+  f:{"0,0":[36,44,22],"0,1":[36,44,22],"0,2":[36,44,21],"0,3":[36,44,21],"0,4":[36,44,21],"1,0":[36,44,22],"1,1":[36,44,22],"1,2":[36,44,21],"1,3":[36,44,21],"1,4":[36,44,22],"1,5":[36,44,22],"1,6":[36,44,21],"1,7":[36,44,21],"2,0":[35,43,21],"2,1":[35,43,22],"2,2":[35,43,21],"2,3":[35,43,21],"2,4":[35,43,21],"2,5":[35,43,22],"2,6":[35,43,21],"2,7":[35,43,21],"3,0":[34,42,18],"3,1":[34,42,18],"3,2":[34,42,18],"3,3":[34,42,18],"4,0":[33,42,21],"4,1":[33,42,21],"4,2":[33,42,21],"4,3":[33,42,21],"5,0":[36,44,22],"5,1":[38,46,22],"5,2":[42,50,21],"5,3":[42,50,21],"5,4":[34,42,23],"5,5":[34,42,22],"6,0":[36,44,22],"6,1":[35,43,24],"6,2":[31,39,30],"6,3":[30,38,31],"6,4":[31,39,30],"6,5":[28,36,31],"6,6":[25,33,31]}
+};
+
+// Canvas-masked hair sheets, cached per (gender | hair sprite URL).
+// Instead of the old clip-path (a hard horizontal cut across the whole hair,
+// which chopped ponytails in half), we bake a masked COPY of the hair sprite
+// sheet: for every frame, ctx.clearRect erases ONLY the skull-zone rectangle
+// above the hat brim (columns skullLeft..skullRight, rows 0..headTop+1).
+// Side strands, fringes and ponytails outside the skull columns survive and
+// peek out from under the hat naturally. The character layers render at
+// native sprite scale (80x64 divs, background-size 800x448 — see
+// .qs-char-layer et al.), so sprite coords are used 1:1, no screen scaling.
+var _maskedHairCache = {};   // key -> dataURL string | 'pending' | 'failed'
+function buildMaskedHairSheet(url, g, done) {
+  var img = new Image();
+  img.onload = function() {
+    try {
+      var cv = document.createElement('canvas');
+      cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+      var ctx = cv.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      var tbl = HAIR_MASK_FRAMES[g] || {};
+      Object.keys(tbl).forEach(function(key) {
+        var rc = key.split(','), r = +rc[0], c = +rc[1];
+        var e = tbl[key];  // [skullLeft, skullRight, headTop]
+        // Erase rows 0..headTop+1 of the skull zone; the hat band fully
+        // covers the skull columns from headTop+1 down (post placement fix).
+        ctx.clearRect(c * 80 + e[0], r * 64, e[1] - e[0] + 1, e[2] + 2);
+      });
+      done(cv.toDataURL());
+    } catch (err) { done(null); }   // tainted canvas etc. -> caller falls back
+  };
+  img.onerror = function() { done(null); };
+  img.src = url;
+}
+
+// Mask the hair layer under partial hats (mage cones / ranger Robin Hood hats).
+// Keeps the legacy name — callers pass the hair element id. Cheap when cached;
+// called every animation tick.
+function applyHairClipToId(hairElId) {
+  var hairEl = document.getElementById(hairElId);
+  if (!hairEl) return;
+  var eq = S.profile.equippedItems || {};
+  var helmetItem = eq.helmet ? LOOT_TABLE.find(function(x){ return x.id === eq.helmet; }) : null;
+  var isPartial = !!(helmetItem && helmetItem.hatType === 'partial');
+  var c = S.customization, g = c.gender || 'm';
+  var fileNum = ((c.hairStyle || 1) - 1) * 5 + (c.hairNum || 1);
+  var tallNums = TALL_HAIR_NUMS[g] || [];
+  var needMask = isPartial && tallNums.indexOf(fileNum) !== -1;
+  if (!needMask) {
+    hairEl.style.clipPath = '';
+    // If a masked sheet is still applied (hat unequipped / hair changed),
+    // restore the plain sprite sheet.
+    if (hairEl.dataset.maskedHair) {
+      delete hairEl.dataset.maskedHair;
+      var plainUrl = 'sprites/preview_assets/char/hair_' + g + fileNum + '.png';
+      if (hairEl.style.backgroundImage.indexOf('data:') !== -1) {
+        hairEl.style.backgroundImage = cssUrl(plainUrl);
+      }
+    }
+    return;
+  }
+  var url = 'sprites/preview_assets/char/hair_' + g + fileNum + '.png';
+  var ck = g + '|' + url;
+  var cached = _maskedHairCache[ck];
+  if (typeof cached === 'string' && cached.indexOf('data:') === 0) {
+    hairEl.style.clipPath = '';
+    // Re-assign only if the element isn't already showing this masked sheet
+    // (refresh functions overwrite backgroundImage with the plain URL).
+    if (hairEl.dataset.maskedHair !== ck ||
+        hairEl.style.backgroundImage.indexOf('data:') === -1) {
+      hairEl.style.backgroundImage = "url('" + cached + "')";
+      hairEl.dataset.maskedHair = ck;
+    }
+  } else if (cached === undefined) {
+    _maskedHairCache[ck] = 'pending';
+    buildMaskedHairSheet(url, g, function(dataUrl) {
+      _maskedHairCache[ck] = dataUrl || 'failed';
+      applyHairClipToId(hairElId);   // apply now that it's ready
+    });
+  } else if (cached === 'failed') {
+    // Canvas unavailable — fall back to the old hard clip (worse looking,
+    // but hair never pokes through the hat).
+    hairEl.style.clipPath = 'inset(' + (BRIM_Y[g] || 21) + 'px 0 0 0)';
+  }
+  // cached === 'pending': the pending build's callback re-applies shortly.
+}
+function applyLegLayerOrder() {
+  var skirt = isSkirtEquipped();
+  CHAR_LAYER_PREFIXES.forEach(function(prefix) {
+    var z = {
+      Skin:   1,
+      Pants:  skirt ? 3 : 2,  // skirt hem paints over the boot shaft
+      Boots:  skirt ? 2 : 3,  // trouser cuff tucks under the boot
+      Shirt:  4,
+      Sword:  5,
+      Hair:   6,
+      Helmet: 7,
+    };
+    Object.keys(z).forEach(function(part) {
+      var el = document.getElementById(prefix + part);
+      if (el) el.style.zIndex = String(z[part]);
+    });
+  });
 }
 
 function setCustom(key, val) {
@@ -2715,7 +3769,7 @@ function setCustom(key, val) {
   renderCustomizeUI();
   refreshSceneLayers();  // quest scene
   refreshHomeLayers();   // home scene
-  if (key === 'gender') renderInventory(); // re-filter inventory by gender
+  if (key === 'gender' || key === 'charClass') renderInventory(); // re-filter inventory by gender/class
 }
 
 function refreshHomeLayers() {
@@ -2724,6 +3778,8 @@ function refreshHomeLayers() {
     var el = document.getElementById(HS_CHAR_IDS[k]);
     if (el) el.style.backgroundImage = layers[k] ? cssUrl(layers[k]) : 'none';
   });
+  applyLegLayerOrder();
+  applyHairClipToId('hsHair');
 }
 
 function renderCustomizeUI() {
@@ -2732,6 +3788,13 @@ function renderCustomizeUI() {
   // Gender
   var gm = document.getElementById('genderM'); if(gm) gm.className = 'ward-chip' + (c.gender !== 'f' ? ' active' : '');
   var gf = document.getElementById('genderF'); if(gf) gf.className = 'ward-chip' + (c.gender === 'f' ? ' active' : '');
+
+  // Class (Warrior / Mage / Ranger)
+  var cCls = c.charClass || 'warrior';
+  [['classWarrior','warrior'],['classMage','mage'],['classRanger','ranger']].forEach(function(pair) {
+    var el = document.getElementById(pair[0]);
+    if (el) el.className = 'ward-chip' + (cCls === pair[1] ? ' active' : '');
+  });
 
   // Skin swatches (1–5)
   var skinEl = document.getElementById('skinOpts');
@@ -2778,6 +3841,8 @@ function refreshSceneLayers() {
     var el = document.getElementById(idMap[k]);
     if (el) el.style.backgroundImage = layers[k] ? cssUrl(layers[k]) : 'none';
   });
+  applyLegLayerOrder();
+  applyHairClipToId('qsHair');
 }
 
 function saveCustomization() {
@@ -2793,7 +3858,7 @@ function refreshAvatarPreview() {
 
   // Build sprite layer structure once
   if (!document.getElementById('avSkin')) {
-    var LAYER_IDS = ['avSkin','avBoots','avPants','avShirt','avSword','avHair','avHelmet'];
+    var LAYER_IDS = ['avSkin','avPants','avBoots','avShirt','avSword','avHair','avHelmet'];
     big.innerHTML = '<div class="av-char-wrap">' +
       LAYER_IDS.map(function(id) { return '<div class="av-layer" id="'+id+'"></div>'; }).join('') +
       '</div>';
@@ -2809,6 +3874,8 @@ function refreshAvatarPreview() {
       el.style.backgroundPosition = '0px 0px'; // idle frame 0
     }
   });
+  applyLegLayerOrder();
+  applyHairClipToId('avHair');
 
   updateHeaderAvatar();
 }
@@ -2875,6 +3942,7 @@ setInterval(function() {
       var el = document.getElementById(CHAR_IDS[k]);
       if (el) el.style.backgroundImage = layers[k] ? cssUrl(layers[k]) : 'none';
     });
+    applyLegLayerOrder();
     qsSetCharFrame(ANIM.idle, 0);
     document.getElementById('qsFireImg').src = CF_SRCS[0];
     if (!qsRunning) { qsRunning = true; requestAnimationFrame(qsLoop); }
@@ -2886,9 +3954,16 @@ setInterval(function() {
       var el = document.getElementById(id);
       if (el) el.style.backgroundPosition = x+'px '+y+'px';
     });
-    var helmetOn = !!(S.profile.equippedItems || {}).helmet;
+    // Hide hair for FULL helmets only. Partial/hood hats use applyHairClipToId below.
+    var helmetOn = !!getCharLayers().helmet;
+    var _heq = S.profile.equippedItems || {};
+    var _hItem = helmetOn && _heq.helmet
+      ? LOOT_TABLE.find(function(x){ return x.id === _heq.helmet; }) : null;
+    var helmetIsPartial = !!(_hItem && _hItem.hatType === 'partial');
+    var helmetIsHood    = !!(_hItem && _hItem.hatType === 'hood');
+    var shouldHideHair = helmetOn && !helmetIsPartial && !helmetIsHood;
     var hairEl = document.getElementById('qsHair');
-    if (hairEl && helmetOn) {
+    if (hairEl && shouldHideHair) {
       if (qsAnim === 'sleep') {
         var c = S.customization, g = c.gender || 'm', hn = c.hairNum || 1;
         var hairUrl = 'sprites/preview_assets/char/hair_' + g + (((c.hairStyle||1) - 1) * 5 + hn) + '.png';
@@ -2897,6 +3972,8 @@ setInterval(function() {
         hairEl.style.backgroundImage = 'none';
       }
     }
+    // Clip tall hair above hat brim for partial hats (mage/ranger hats)
+    applyHairClipToId('qsHair');
   }
 
   function qsSetPortalFrame(f) {
@@ -2939,7 +4016,7 @@ setInterval(function() {
     if (newAnim !== qsAnim) {
       qsAnim = newAnim; qsCharFrame = 0; qsPortalFrame = 0;
       el = document.getElementById('qsLabel');
-      if(el) el.textContent = active > 0 ? '⚔ In combat!' : '💤 Resting by camp';
+      if(el){ el.style.display = active > 0 ? 'none' : ''; el.textContent = '💤 Resting by camp'; }
       // Show fire only when resting
       el = document.querySelector('.qs-fire-wrap');
       if(el) el.style.display = active > 0 ? 'none' : 'block';

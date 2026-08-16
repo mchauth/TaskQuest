@@ -1,0 +1,87 @@
+/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+════════════════════════════════════════════════════════════
+Phase 1: Submitting all jobs…
+════════════════════════════════════════════════════════════
+    submit OK: {'usage': None, 'background_job_id': '222e81cd-28a9-4c09-b270-7b6ae4078caf', 'character_id': 'dbf522b3-c819-4d0a-9326-5fdb65e58418', 'status': 'processing'}
+  SUBMITTED  warrior_t1.png  → job 222e81cd-28a9-4c09-b270-7b6ae4078caf
+    submit OK: {'usage': None, 'background_job_id': '9d4c4ea8-30bd-4b41-8796-da6f79fd0fd4', 'character_id': 'faf14c89-c313-4bc6-84da-0344197ced25', 'status': 'processing'}
+  SUBMITTED  warrior_t2.png  → job 9d4c4ea8-30bd-4b41-8796-da6f79fd0fd4
+    submit OK: {'usage': None, 'background_job_id': 'a44efdee-c62e-40b7-abfb-c77b3e70bc10', 'character_id': '14bcd282-c1e1-412f-bb37-f6bc620fe043', 'status': 'processing'}
+  SUBMITTED  warrior_t3.png  → job a44efdee-c62e-40b7-abfb-c77b3e70bc10
+    submit OK: {'usage': None, 'background_job_id': '2116168f-1d7b-4a0f-af18-9dad6914afd6', 'character_id': '555d1aa9-cea3-44bb-88fa-f8456c989c80', 'status': 'processing'}
+  SUBMITTED  warrior_t4.png  → job 2116168f-1d7b-4a0f-af18-9dad6914afd6
+    submit OK: {'usage': None, 'background_job_id': '534d568f-b697-4a01-866f-344a838c3fe0', 'character_id': 'a0ac75ea-47ec-4578-95b8-d1f4e033f009', 'status': 'processing'}
+  SUBMITTED  warrior_t5.png  → job 534d568f-b697-4a01-866f-344a838c3fe0
+    submit OK: {'usage': None, 'background_job_id': '50bc270b-5300-4419-bc08-b7f172dbe8a0', 'character_id': '14be8a72-acc9-4e55-8da8-f1d89968a6f3', 'status': 'processing'}
+  SUBMITTED  mage_t1.png  → job 50bc270b-5300-4419-bc08-b7f172dbe8a0
+    submit OK: {'usage': None, 'background_job_id': '79f47571-888e-4c92-b869-473bd36b6d17', 'character_id': 'f75f6962-c8a3-43d0-84bb-ca82c1971513', 'status': 'processing'}
+  SUBMITTED  mage_t2.png  → job 79f47571-888e-4c92-b869-473bd36b6d17
+    submit OK: {'usage': None, 'background_job_id': 'fc32eaea-e676-4e77-b86e-069e01496c8d', 'character_id': 'dda4c059-167a-41c6-a99b-de87899e5443', 'status': 'processing'}
+  SUBMITTED  mage_t3.png  → job fc32eaea-e676-4e77-b86e-069e01496c8d
+    submit OK: {'usage': None, 'background_job_id': 'd8a36acb-401d-4513-a42f-ccac81056b8c', 'character_id': 'c42e2900-0030-41ac-8906-a39792bc5033', 'status': 'processing'}
+  SUBMITTED  mage_t4.png  → job d8a36acb-401d-4513-a42f-ccac81056b8c
+    submit OK: {'usage': None, 'background_job_id': 'a3a26f23-a5eb-4310-966e-0c151e66b5cb', 'character_id': 'c94a97f0-d59c-4111-b098-5bbfb9c5b9d2', 'status': 'processing'}
+  SUBMITTED  mage_t5.png  → job a3a26f23-a5eb-4310-966e-0c151e66b5cb
+    submit OK: {'usage': None, 'background_job_id': 'b35259a3-b990-4335-b9db-5bfc99b70bcb', 'character_id': '4809138b-429c-4447-b558-227c0f162e56', 'status': 'processing'}
+  SUBMITTED  ranger_t1.png  → job b35259a3-b990-4335-b9db-5bfc99b70bcb
+    submit OK: {'usage': None, 'background_job_id': '5d310ae5-925a-409c-a571-72ca7f2108ec', 'character_id': '400090ea-8dc7-44ab-8b4a-a62d17771583', 'status': 'processing'}
+  SUBMITTED  ranger_t2.png  → job 5d310ae5-925a-409c-a571-72ca7f2108ec
+    submit OK: {'usage': None, 'background_job_id': 'd95d6e19-4d59-4d65-b2f4-37a8ea254688', 'character_id': '15bba7bb-c419-4d75-b3b9-5d5a262c385d', 'status': 'processing'}
+  SUBMITTED  ranger_t3.png  → job d95d6e19-4d59-4d65-b2f4-37a8ea254688
+    submit OK: {'usage': None, 'background_job_id': 'da4e3980-7c9b-4e30-9391-60aa17f2dcc5', 'character_id': '0e72407e-bb3e-4e0f-96e5-8ed3b78bc5f7', 'status': 'processing'}
+  SUBMITTED  ranger_t4.png  → job da4e3980-7c9b-4e30-9391-60aa17f2dcc5
+    submit OK: {'usage': None, 'background_job_id': '4eb14674-4958-468c-a86d-033ea997268b', 'character_id': 'afcb6c0d-b960-411b-8e0a-825384600b07', 'status': 'processing'}
+  SUBMITTED  ranger_t5.png  → job 4eb14674-4958-468c-a86d-033ea997268b
+    submit OK: {'usage': None, 'background_job_id': '72d1f167-2447-4efa-be0c-6e7f1ef2dec5', 'character_id': '5073b6e1-d1b2-41d8-98d0-a02e9c554098', 'status': 'processing'}
+  SUBMITTED  cleric_t1.png  → job 72d1f167-2447-4efa-be0c-6e7f1ef2dec5
+    submit OK: {'usage': None, 'background_job_id': 'c9b9b320-fa97-4a35-aa1e-110f895abdca', 'character_id': 'f4e8d186-bfe9-46df-a12f-fcdc277bc9ab', 'status': 'processing'}
+  SUBMITTED  cleric_t2.png  → job c9b9b320-fa97-4a35-aa1e-110f895abdca
+    submit OK: {'usage': None, 'background_job_id': '71d8ecef-f3ae-4f87-a752-8d3620ff7b01', 'character_id': '8922eaff-9519-4084-94a9-27352907b7ec', 'status': 'processing'}
+  SUBMITTED  cleric_t3.png  → job 71d8ecef-f3ae-4f87-a752-8d3620ff7b01
+    submit OK: {'usage': None, 'background_job_id': '1bc68f9b-2447-4a36-82ff-ae5b3509bec1', 'character_id': 'd6beb11e-39d7-413f-bd9a-6ffe0e03cd77', 'status': 'processing'}
+  SUBMITTED  cleric_t4.png  → job 1bc68f9b-2447-4a36-82ff-ae5b3509bec1
+    submit OK: {'usage': None, 'background_job_id': '2aee9483-09ee-4884-ab9c-64b068649db1', 'character_id': '965811c2-957e-44d7-a944-b3abfefa0f20', 'status': 'processing'}
+  SUBMITTED  cleric_t5.png  → job 2aee9483-09ee-4884-ab9c-64b068649db1
+    submit OK: {'usage': None, 'background_job_id': '3b71db9c-c2a1-4628-b92c-c01abe430269', 'character_id': '31f1fdc1-8547-458f-8118-1804ef32b81a', 'status': 'processing'}
+  SUBMITTED  rogue_t1.png  → job 3b71db9c-c2a1-4628-b92c-c01abe430269
+    submit OK: {'usage': None, 'background_job_id': 'bdb959a8-8c46-4a22-a475-463c37c98a38', 'character_id': '00ffd04e-79e0-4a4c-ab1b-2c47dbd0574f', 'status': 'processing'}
+  SUBMITTED  rogue_t2.png  → job bdb959a8-8c46-4a22-a475-463c37c98a38
+Traceback (most recent call last):
+  File "/Users/matthauth/Projects/TaskQuest/generate_sprites.py", line 220, in <module>
+    sys.exit(main())
+  File "/Users/matthauth/Projects/TaskQuest/generate_sprites.py", line 162, in main
+    job_id = submit_job(description)
+  File "/Users/matthauth/Projects/TaskQuest/generate_sprites.py", line 69, in submit_job
+    resp = requests.post(
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/requests/api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/connection.py", line 796, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/connection.py", line 975, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/util/ssl_.py", line 483, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "/Users/matthauth/Library/Python/3.9/lib/python/site-packages/urllib3/util/ssl_.py", line 527, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ssl.py", line 500, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ssl.py", line 1040, in _create
+    self.do_handshake()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ssl.py", line 1309, in do_handshake
+    self._sslobj.do_handshake()
+KeyboardInterrupt

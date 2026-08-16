@@ -387,6 +387,18 @@ After saving, re-inspect frame 0's plate zone to confirm zero brown pixels. If a
 
 All tiers: 800×448 spritesheet, `sprites/preview_assets/char/`, indexed in LOOT_TABLE with `slot:'shirt'`.
 
+### Rare Warrior Sets (Legendary Prestige Skins)
+
+Not part of the tier progression — unlockable prestige skins. Generated pixel-by-pixel with PIL using palette-swap + centroid/head-top propagation. Level 25 req, `rarity:'legendary'`, `classes:['warrior']`.
+
+| Set | Files | Color Identity | Signature |
+|-----|-------|---------------|-----------|
+| Crimson Sentinel | `helmet_rare1`, `shirt_rare1`, `pants_rare1` | Deep red + gold | Full-face gold visor, white star emblem, T-bar slot |
+| Shadow Warden | `helmet_rare2`, `shirt_rare2`, `pants_rare2` | Near-black + teal | Full-face teal visor, 3-bar teal grate, teal diamond |
+| Solar Paladin | `helmet_rare3`, `shirt_rare3`, `pants_rare3` | Rich gold + ivory | Full-face ivory visor, white sun emblem, T-bar slot |
+
+**Design approach:** Palette-swap from `shirt.png`/`pants.png` mask + explicit helm pixel dicts. Generation script at `outputs/gen_rare_armor.py`. Accent pixels (emblem, visor) painted on frame 0 before propagation.
+
 ---
 
 ## Helmet Sprite Pipeline
@@ -432,6 +444,20 @@ Use `skin_m1.png` head bounding box (y<32) for per-frame tracking:
 3. Compute `dy = frame_top_y - f0_top_y` and `dx = round(frame_cx - f0_cx)`.
 4. Shift all helmet pixels by (dx, dy). Bounds-check before painting.
 5. The 1px idle bob (top_y alternates 20↔21) is captured correctly by top-of-head tracking.
+
+### Hood / Cowl Helmets (`hatType:'hood'`)
+
+Cowl helmets (e.g. Mage/Ranger Legendary Cowl) use `hatType:'hood'` in the LOOT_TABLE entry. This triggers special hair-rendering logic in `getCharLayers()` in `index.html`:
+
+- **Long, Medium, and Ponytail** hair styles render as short hair (bangs only) when a hood is equipped.
+- **Mohawk and Man-Bun** are unaffected and render normally.
+- The cowl sprite covers only the **hood cap and hanging cape** — the chest area is fully transparent so the equipped shirt shows through underneath. Do NOT draw any chest/torso pixels in the helmet sprite layer.
+
+Reference designs (not yet generated):
+- **Mage Legendary Cowl** — `sprites/preview_assets/char/helmet_mage_legendary_cowl.png` — midnight blue, silver trim; male + female versions needed. Script: `scripts/redesign_cowl_helmets.py`.
+- **Ranger Legendary Cowl** — `sprites/preview_assets/char/helmet_ranger_legendary_cowl.png` — forest green, leather trim; male + female versions needed. Script: `scripts/redesign_cowl_helmets.py`.
+
+---
 
 ### Sleep Frames (68–69)
 
@@ -498,18 +524,20 @@ Reassemble in Python: `''.join(c.replace('|','') for c in chunks)`.
 ## What's Left / Next Steps
 
 1. **Armor tiers 3–6 (`armor_chest_3.png` through `armor_chest_6.png`):** Design and generate the remaining chest armor progression (chainmail → plate, etc.) using the confirmed shirt-mask method (see Armor Sprite Pipeline above).
-3. **Class-filtered loot content:** Currently only warrior items have rarity/class fields. Populate Mage and Ranger loot with correct `classes` values and matching sprites.
-4. **Hair re-generation:** Re-do Long (style 2) and Ponytail (style 4) with full-head inpaint mask (not just extension) so short hair doesn't bleed through. Remove or redo styles 3/5/6.
-5. **Female hairstyles:** All female styles (hair_f1–5) are currently just 5 color variants of one short style. Need the same style expansion as male.
-6. **More PixelLab assets:** Trees, props, and other scene objects via Chrome API pipeline.
+2. **Cowl helmets (mage + ranger legendary):** Generate `helmet_mage_legendary_cowl.png` and `helmet_ranger_legendary_cowl.png` (+ `_f` variants) via `scripts/redesign_cowl_helmets.py`. Hood cap + hanging cape only — chest area transparent. Register with `hatType:'hood'` in LOOT_TABLE. See "Hood / Cowl Helmets" section in the Helmet Pipeline above for hair-rendering behavior.
+3. **Divine Seraph Plate with Wings — female version:** `shirt_warrior_legendary1_f.png` via `scripts/legendary_armor_t1.py`. Male is already staged in CONTEXT.md awaiting approval; female version is still needed.
+4. **Class-filtered loot content:** Currently only warrior items have rarity/class fields. Populate Mage and Ranger loot with correct `classes` values and matching sprites.
+5. **Hair re-generation:** Re-do Long (style 2) and Ponytail (style 4) with full-head inpaint mask (not just extension) so short hair doesn't bleed through. Remove or redo styles 3/5/6.
+6. **Female hairstyles:** All female styles (hair_f1–5) are currently just 5 color variants of one short style. Need the same style expansion as male.
+7. **More PixelLab assets:** Trees, props, and other scene objects via Chrome API pipeline.
 
 ---
 
 ## Deployment
 
 ```bash
-# From scratch each session (PAT expires occasionally):
-cd /tmp && git clone https://mchauth:<PAT>@github.com/mchauth/TaskQuest-HTML.git tq_push
+# From scratch each session:
+cd /tmp && git clone https://mchauth:REDACTED_TOKEN@github.com/mchauth/TaskQuest-HTML.git tq_push
 cd /tmp/tq_push
 git config user.email "mchauth@gmail.com"
 git config user.name "Matt Hauth"

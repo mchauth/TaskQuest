@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TaskQuest Sprite Preview Gallery</title>
+<style>
+  body { background: #1a1a2e; color: #eee; font-family: monospace; margin: 0; padding: 16px; }
+  h1 { color: #f0c040; margin-bottom: 4px; }
+  h2 { color: #a0c0ff; border-bottom: 1px solid #444; padding-bottom: 4px; margin-top: 32px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .card { background: #2a2a3e; border: 1px solid #444; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+  .card:hover { border-color: #f0c040; }
+  .card.selected { border-color: #40ff80; background: #1a3a2a; }
+  .card img { image-rendering: pixelated; display: block; }
+  .card .name { font-size: 10px; color: #aaa; margin-top: 4px; max-width: 160px; word-break: break-all; }
+  #selected-list { position: fixed; top: 16px; right: 16px; background: #0a0a1e; border: 1px solid #40ff80; border-radius: 8px; padding: 12px; max-width: 220px; max-height: 80vh; overflow-y: auto; font-size: 11px; }
+  #selected-list h3 { color: #40ff80; margin: 0 0 8px 0; }
+  #selected-list .item { color: #ccc; margin: 2px 0; }
+  #copy-btn { display: block; margin-top: 8px; background: #40ff80; color: #000; border: none; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-family: monospace; width: 100%; }
+</style>
+</head>
+<body>
+<h1>TaskQuest Sprite Preview Gallery</h1>
+<p style="color:#888">Click cards to select for deployment. Selected items shown top-right.</p>
+
+<div id="selected-list">
+  <h3>✓ Selected to Deploy</h3>
+  <div id="sel-items"><em style="color:#666">None yet</em></div>
+  <button id="copy-btn" onclick="copyList()">Copy list</button>
+</div>
+
+<script>
+const selected = new Set();
+function toggle(el, name) {
+  if (selected.has(name)) { selected.delete(name); el.classList.remove('selected'); }
+  else { selected.add(name); el.classList.add('selected'); }
+  const div = document.getElementById('sel-items');
+  if (selected.size === 0) { div.innerHTML = '<em style="color:#666">None yet</em>'; return; }
+  div.innerHTML = [...selected].sort().map(n => `<div class="item">${n}</div>`).join('');
+}
+function copyList() {
+  navigator.clipboard.writeText([...selected].sort().join('\n'));
+}
+function card(path, label, scale) {
+  const s = scale || 2;
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.onclick = () => toggle(el, label);
+  el.innerHTML = `<img src="${path}" style="width:${160*s/2}px;height:auto"><div class="name">${label}</div>`;
+  return el;
+}
+</script>
+
+<h2>Legendary Shirts (97)</h2>
+<div class="grid" id="cat-Legendary_Shirts">
+<script>
+(function(){
+  const g = document.currentScript.parentElement;
+  [
+    card("_PREVIEW_ajoure_legendary.png", "ajoure_legendary", 2),
+    card("_PREVIEW_anneal_legendary.png", "anneal_legendary", 2),
+    card("_PREVIEW_arcade_legendary.png", "arcade_legendary", 2),
+    card("_PREVIEW_argyle_legendary.png", "argyle_legendary", 2),
+    card("_PREVIEW_ashlar_legendary.png", "ashlar_legendary", 2),
+    card("_PREVIEW_attrition_legendary.png", "attrition_legendary", 2),
+    card("_PREVIEW_baldric_legendary.png", "baldric_legendary", 2),
+    card("_PREVIEW_basketweave_legendary.png", "basketweave_legendary", 2),
+    card("_PREVIEW_beadreel_legendary.png", "beadreel_legendary", 2),
+    card("_PREVIEW_brigandine_legendary.png", "brigandine_legendary", 2),
+    card("_PREVIEW_cable_legendary.png", "cable_legendary", 2),
+    card("_PREVIEW_cadence_legendary.png", "cadence_legendary", 2),
+    card("_PREVIEW_canon_legendary.png", "canon_legendary", 2),
+    card("_PREVIEW_cape_legendary.png", "cape_legendary", 2),
+    card("_PREVIEW_cascade_legendary.png", "cascade_legendary", 2),
+    card("_PREVIEW_chainmail_legendary.png", "chainmail_legendary", 2),
+    card("_PREVIEW_chevron_legendary.png", "chevron_legendary", 2),
+    card("_PREVIEW_clasp_legendary.png", "clasp_legendary", 2),
+    card("_PREVIEW_coffer_legendary.png", "coffer_legendary", 2),
+    card("_PREVIEW_colophon_legendary.png", "colophon_legendary", 2),
+    card("_PREVIEW_concentric_legendary.png", "concentric_legendary", 2),
+    card("_PREVIEW_confluence_legendary.png", "confluence_legendary", 2),
+    card("_PREVIEW_cosmati_legendary.png", "cosmati_legendary", 2),
+    card("_PREVIEW_counterchange_legendary.png", "counterchange_legendary", 2),
+    card("_PREVIEW_craquelure_legendary.png", "craquelure_legendary", 2),
+    card("_PREVIEW_crest_legendary.png", "crest_legendary", 2),
+    card("_PREVIEW_current_legendary.png", "current_legendary", 2),
+    card("_PREVIEW_datum_legendary.png", "datum_legendary", 2),
+    card("_PREVIEW_dendrite_legendary.png", "dendrite_legendary", 2),
+    card("_PREVIEW_dentil_legendary.png", "dentil_legendary", 2),
+    card("_PREVIEW_dovetail_legendary.png", "dovetail_legendary", 2),
+    card("_PREVIEW_eggdart_legendary.png", "eggdart_legendary", 2),
+    card("_PREVIEW_facet_legendary.png", "facet_legendary", 2),
+    card("_PREVIEW_festoon_legendary.png", "festoon_legendary", 2),
+    card("_PREVIEW_flowgrain_legendary.png", "flowgrain_legendary", 2),
+    card("_PREVIEW_flute_legendary.png", "flute_legendary", 2),
+    card("_PREVIEW_gadroon_legendary.png", "gadroon_legendary", 2),
+    card("_PREVIEW_gambit_legendary.png", "gambit_legendary", 2),
+    card("_PREVIEW_gauge_legendary.png", "gauge_legendary", 2),
+    card("_PREVIEW_girdle_legendary.png", "girdle_legendary", 2),
+    card("_PREVIEW_gorget_legendary.png", "gorget_legendary", 2),
+    card("_PREVIEW_granulation_legendary.png", "granulation_legendary", 2),
+    card("_PREVIEW_guilloche_legendary.png", "guilloche_legendary", 2),
+    card("_PREVIEW_horned_legendary.png", "horned_legendary", 2),
+    card("_PREVIEW_houndstooth_legendary.png", "houndstooth_legendary", 2),
+    card("_PREVIEW_labyrinth_legendary.png", "labyrinth_legendary", 2),
+    card("_PREVIEW_lamellar_legendary.png", "lamellar_legendary", 2),
+    card("_PREVIEW_lattice_legendary.png", "lattice_legendary", 2),
+    card("_PREVIEW_legendary2.png", "legendary2", 2),
+    card("_PREVIEW_legendary3.png", "legendary3", 2),
+    card("_PREVIEW_legendary4.png", "legendary4", 2),
+    card("_PREVIEW_legendary6.png", "legendary6", 2),
+    card("_PREVIEW_legendary7.png", "legendary7", 2),
+    card("_PREVIEW_legendary8.png", "legendary8", 2),
+    card("_PREVIEW_legendary9.png", "legendary9", 2),
+    card("_PREVIEW_mage_legendary5.png", "mage_legendary5", 2),
+    card("_PREVIEW_mage_winged_legendary.png", "mage_winged_legendary", 2),
+    card("_PREVIEW_meander_legendary.png", "meander_legendary", 2),
+    card("_PREVIEW_mokume_legendary.png", "mokume_legendary", 2),
+    card("_PREVIEW_octagram_legendary.png", "octagram_legendary", 2),
+    card("_PREVIEW_ogee_legendary.png", "ogee_legendary", 2),
+    card("_PREVIEW_pauldron_legendary.png", "pauldron_legendary", 2),
+    card("_PREVIEW_quatrefoil_legendary.png", "quatrefoil_legendary", 2),
+    card("_PREVIEW_quilt_legendary.png", "quilt_legendary", 2),
+    card("_PREVIEW_quorum_legendary.png", "quorum_legendary", 2),
+    card("_PREVIEW_ranger_legendary5.png", "ranger_legendary5", 2),
+    card("_PREVIEW_ranger_winged_legendary.png", "ranger_winged_legendary", 2),
+    card("_PREVIEW_roundel_legendary.png", "roundel_legendary", 2),
+    card("_PREVIEW_runic_legendary.png", "runic_legendary", 2),
+    card("_PREVIEW_scale_legendary.png", "scale_legendary", 2),
+    card("_PREVIEW_seigaiha_legendary.png", "seigaiha_legendary", 2),
+    card("_PREVIEW_seme_legendary.png", "seme_legendary", 2),
+    card("_PREVIEW_shirt_mage_legendary_cape.png", "shirt_mage_legendary_cape", 2),
+    card("_PREVIEW_shirt_mage_legendary_hooded.png", "shirt_mage_legendary_hooded", 2),
+    card("_PREVIEW_shirt_ranger_legendary_cape.png", "shirt_ranger_legendary_cape", 2),
+    card("_PREVIEW_shirt_ranger_legendary_hooded.png", "shirt_ranger_legendary_hooded", 2),
+    card("_PREVIEW_shirt_warrior_legendary_cape.png", "shirt_warrior_legendary_cape", 2),
+    card("_PREVIEW_shirt_warrior_legendary_winged_cape.png", "shirt_warrior_legendary_winged_cape", 2),
+    card("_PREVIEW_slotwork_legendary.png", "slotwork_legendary", 2),
+    card("_PREVIEW_spiral_legendary.png", "spiral_legendary", 2),
+    card("_PREVIEW_strata_legendary.png", "strata_legendary", 2),
+    card("_PREVIEW_strigil_legendary.png", "strigil_legendary", 2),
+    card("_PREVIEW_sunburst_legendary.png", "sunburst_legendary", 2),
+    card("_PREVIEW_survey_legendary.png", "survey_legendary", 2),
+    card("_PREVIEW_tabard_legendary.png", "tabard_legendary", 2),
+    card("_PREVIEW_tally_legendary.png", "tally_legendary", 2),
+    card("_PREVIEW_tartan_legendary.png", "tartan_legendary", 2),
+    card("_PREVIEW_truss_legendary.png", "truss_legendary", 2),
+    card("_PREVIEW_twill_legendary.png", "twill_legendary", 2),
+    card("_PREVIEW_vortice_legendary.png", "vortice_legendary", 2),
+    card("_PREVIEW_warrant_legendary.png", "warrant_legendary", 2),
+    card("_PREVIEW_warrior_legendary4.png", "warrior_legendary4", 2),
+    card("_PREVIEW_warrior_legendary5.png", "warrior_legendary5", 2),
+    card("_PREVIEW_wave_legendary.png", "wave_legendary", 2),
+    card("_PREVIEW_winged_legendary.png", "winged_legendary", 2),
+    card("_PREVIEW_winghelm_legendary.png", "winghelm_legendary", 2),
+    card("_PREVIEW_zigzag_legendary.png", "zigzag_legendary", 2),
+  ].forEach(c => g.appendChild(c));
+})();
+</script>
+</div>
+
+<h2>Helmets (72)</h2>
+<div class="grid" id="cat-Helmets">
+<script>
+(function(){
+  const g = document.currentScript.parentElement;
+  [
+    card("_PREVIEW_ajouredome_helmet.png", "ajouredome_helmet", 2),
+    card("_PREVIEW_annealdome_helmet.png", "annealdome_helmet", 2),
+    card("_PREVIEW_antler_helmet.png", "antler_helmet", 2),
+    card("_PREVIEW_arcadedome_helmet.png", "arcadedome_helmet", 2),
+    card("_PREVIEW_argyledome_helmet.png", "argyledome_helmet", 2),
+    card("_PREVIEW_ashlardome_helmet.png", "ashlardome_helmet", 2),
+    card("_PREVIEW_attritiondome_helmet.png", "attritiondome_helmet", 2),
+    card("_PREVIEW_aventail_helmet.png", "aventail_helmet", 2),
+    card("_PREVIEW_basketdome_helmet.png", "basketdome_helmet", 2),
+    card("_PREVIEW_beadreeldome_helmet.png", "beadreeldome_helmet", 2),
+    card("_PREVIEW_cabledome_helmet.png", "cabledome_helmet", 2),
+    card("_PREVIEW_cadencedome_helmet.png", "cadencedome_helmet", 2),
+    card("_PREVIEW_canondome_helmet.png", "canondome_helmet", 2),
+    card("_PREVIEW_cascadedome_helmet.png", "cascadedome_helmet", 2),
+    card("_PREVIEW_cchangedome_helmet.png", "cchangedome_helmet", 2),
+    card("_PREVIEW_chaincoif_helmet.png", "chaincoif_helmet", 2),
+    card("_PREVIEW_cheek_helmet.png", "cheek_helmet", 2),
+    card("_PREVIEW_claspdome_helmet.png", "claspdome_helmet", 2),
+    card("_PREVIEW_cofferdome_helmet.png", "cofferdome_helmet", 2),
+    card("_PREVIEW_colophondome_helmet.png", "colophondome_helmet", 2),
+    card("_PREVIEW_confluencedome_helmet.png", "confluencedome_helmet", 2),
+    card("_PREVIEW_cosmatidome_helmet.png", "cosmatidome_helmet", 2),
+    card("_PREVIEW_craqueluredome_helmet.png", "craqueluredome_helmet", 2),
+    card("_PREVIEW_currentdome_helmet.png", "currentdome_helmet", 2),
+    card("_PREVIEW_datumdome_helmet.png", "datumdome_helmet", 2),
+    card("_PREVIEW_dendritedome_helmet.png", "dendritedome_helmet", 2),
+    card("_PREVIEW_dentildome_helmet.png", "dentildome_helmet", 2),
+    card("_PREVIEW_diadem_helmet.png", "diadem_helmet", 2),
+    card("_PREVIEW_dovetaildome_helmet.png", "dovetaildome_helmet", 2),
+    card("_PREVIEW_eggdartdome_helmet.png", "eggdartdome_helmet", 2),
+    card("_PREVIEW_facetdome_helmet.png", "facetdome_helmet", 2),
+    card("_PREVIEW_festoondome_helmet.png", "festoondome_helmet", 2),
+    card("_PREVIEW_flowgraindome_helmet.png", "flowgraindome_helmet", 2),
+    card("_PREVIEW_fluteddome_helmet.png", "fluteddome_helmet", 2),
+    card("_PREVIEW_gadroondome_helmet.png", "gadroondome_helmet", 2),
+    card("_PREVIEW_gambitdome_helmet.png", "gambitdome_helmet", 2),
+    card("_PREVIEW_gaugedome_helmet.png", "gaugedome_helmet", 2),
+    card("_PREVIEW_granulationdome_helmet.png", "granulationdome_helmet", 2),
+    card("_PREVIEW_guillochedome_helmet.png", "guillochedome_helmet", 2),
+    card("_PREVIEW_helmet_eyeslit_fix.png", "helmet_eyeslit_fix", 2),
+    card("_PREVIEW_houndsdome_helmet.png", "houndsdome_helmet", 2),
+    card("_PREVIEW_labyrinthdome_helmet.png", "labyrinthdome_helmet", 2),
+    card("_PREVIEW_latticedome_helmet.png", "latticedome_helmet", 2),
+    card("_PREVIEW_meanderdome_helmet.png", "meanderdome_helmet", 2),
+    card("_PREVIEW_mokumedome_helmet.png", "mokumedome_helmet", 2),
+    card("_PREVIEW_nasal_helmet.png", "nasal_helmet", 2),
+    card("_PREVIEW_octadome_helmet.png", "octadome_helmet", 2),
+    card("_PREVIEW_ogeedome_helmet.png", "ogeedome_helmet", 2),
+    card("_PREVIEW_oracledome_helmet.png", "oracledome_helmet", 2),
+    card("_PREVIEW_quatredome_helmet.png", "quatredome_helmet", 2),
+    card("_PREVIEW_quiltdome_helmet.png", "quiltdome_helmet", 2),
+    card("_PREVIEW_quorumdome_helmet.png", "quorumdome_helmet", 2),
+    card("_PREVIEW_runicdome_helmet.png", "runicdome_helmet", 2),
+    card("_PREVIEW_scaledome_helmet.png", "scaledome_helmet", 2),
+    card("_PREVIEW_seidome_helmet.png", "seidome_helmet", 2),
+    card("_PREVIEW_semedome_helmet.png", "semedome_helmet", 2),
+    card("_PREVIEW_slotdome_helmet.png", "slotdome_helmet", 2),
+    card("_PREVIEW_spiraldome_helmet.png", "spiraldome_helmet", 2),
+    card("_PREVIEW_stratadome_helmet.png", "stratadome_helmet", 2),
+    card("_PREVIEW_strigildome_helmet.png", "strigildome_helmet", 2),
+    card("_PREVIEW_studdome_helmet.png", "studdome_helmet", 2),
+    card("_PREVIEW_sunburstdome_helmet.png", "sunburstdome_helmet", 2),
+    card("_PREVIEW_surveydome_helmet.png", "surveydome_helmet", 2),
+    card("_PREVIEW_tallydome_helmet.png", "tallydome_helmet", 2),
+    card("_PREVIEW_tartandome_helmet.png", "tartandome_helmet", 2),
+    card("_PREVIEW_trussdome_helmet.png", "trussdome_helmet", 2),
+    card("_PREVIEW_twilldome_helmet.png", "twilldome_helmet", 2),
+    card("_PREVIEW_visor_helmet.png", "visor_helmet", 2),
+    card("_PREVIEW_vorticedome_helmet.png", "vorticedome_helmet", 2),
+    card("_PREVIEW_warrantdome_helmet.png", "warrantdome_helmet", 2),
+    card("_PREVIEW_wavedome_helmet.png", "wavedome_helmet", 2),
+    card("_PREVIEW_zigzagdome_helmet.png", "zigzagdome_helmet", 2),
+  ].forEach(c => g.appendChild(c));
+})();
+</script>
+</div>
+
+<h2>Legs (76)</h2>
+<div class="grid" id="cat-Legs">
+<script>
+(function(){
+  const g = document.currentScript.parentElement;
+  [
+    card("_PREVIEW_ajoure_legs.png", "ajoure_legs", 2),
+    card("_PREVIEW_anneal_legs.png", "anneal_legs", 2),
+    card("_PREVIEW_arcade_legs.png", "arcade_legs", 2),
+    card("_PREVIEW_argyle_legs.png", "argyle_legs", 2),
+    card("_PREVIEW_ashlar_legs.png", "ashlar_legs", 2),
+    card("_PREVIEW_attrition_legs.png", "attrition_legs", 2),
+    card("_PREVIEW_basketweave_legs.png", "basketweave_legs", 2),
+    card("_PREVIEW_beadreel_legs.png", "beadreel_legs", 2),
+    card("_PREVIEW_cable_legs.png", "cable_legs", 2),
+    card("_PREVIEW_cadence_legs.png", "cadence_legs", 2),
+    card("_PREVIEW_canon_legs.png", "canon_legs", 2),
+    card("_PREVIEW_cascade_legs.png", "cascade_legs", 2),
+    card("_PREVIEW_chainmail_legs.png", "chainmail_legs", 2),
+    card("_PREVIEW_clasp_legs.png", "clasp_legs", 2),
+    card("_PREVIEW_coffer_legs.png", "coffer_legs", 2),
+    card("_PREVIEW_colophon_legs.png", "colophon_legs", 2),
+    card("_PREVIEW_concentric_legs.png", "concentric_legs", 2),
+    card("_PREVIEW_confluence_legs.png", "confluence_legs", 2),
+    card("_PREVIEW_cosmati_legs.png", "cosmati_legs", 2),
+    card("_PREVIEW_counterchange_legs.png", "counterchange_legs", 2),
+    card("_PREVIEW_craquelure_legs.png", "craquelure_legs", 2),
+    card("_PREVIEW_cuisse_legs.png", "cuisse_legs", 2),
+    card("_PREVIEW_current_legs.png", "current_legs", 2),
+    card("_PREVIEW_datum_legs.png", "datum_legs", 2),
+    card("_PREVIEW_dendrite_legs.png", "dendrite_legs", 2),
+    card("_PREVIEW_dentil_legs.png", "dentil_legs", 2),
+    card("_PREVIEW_diamond_legs.png", "diamond_legs", 2),
+    card("_PREVIEW_dovetail_legs.png", "dovetail_legs", 2),
+    card("_PREVIEW_eggdart_legs.png", "eggdart_legs", 2),
+    card("_PREVIEW_facet_legs.png", "facet_legs", 2),
+    card("_PREVIEW_faulds_legs.png", "faulds_legs", 2),
+    card("_PREVIEW_festoon_legs.png", "festoon_legs", 2),
+    card("_PREVIEW_flowgrain_legs.png", "flowgrain_legs", 2),
+    card("_PREVIEW_gadroon_legs.png", "gadroon_legs", 2),
+    card("_PREVIEW_gambit_legs.png", "gambit_legs", 2),
+    card("_PREVIEW_gauge_legs.png", "gauge_legs", 2),
+    card("_PREVIEW_granulation_legs.png", "granulation_legs", 2),
+    card("_PREVIEW_guilloche_legs.png", "guilloche_legs", 2),
+    card("_PREVIEW_houndstooth_legs.png", "houndstooth_legs", 2),
+    card("_PREVIEW_kneeband_legs.png", "kneeband_legs", 2),
+    card("_PREVIEW_labyrinth_legs.png", "labyrinth_legs", 2),
+    card("_PREVIEW_legbaldric_legs.png", "legbaldric_legs", 2),
+    card("_PREVIEW_loinguard_legs.png", "loinguard_legs", 2),
+    card("_PREVIEW_mage_crown_legs.png", "mage_crown_legs", 2),
+    card("_PREVIEW_meander_legs.png", "meander_legs", 2),
+    card("_PREVIEW_mokume_legs.png", "mokume_legs", 2),
+    card("_PREVIEW_octagram_legs.png", "octagram_legs", 2),
+    card("_PREVIEW_ogee_legs.png", "ogee_legs", 2),
+    card("_PREVIEW_poleyn_legs.png", "poleyn_legs", 2),
+    card("_PREVIEW_quatrefoil_legs.png", "quatrefoil_legs", 2),
+    card("_PREVIEW_quilt_legs.png", "quilt_legs", 2),
+    card("_PREVIEW_quorum_legs.png", "quorum_legs", 2),
+    card("_PREVIEW_ranger_crown_legs.png", "ranger_crown_legs", 2),
+    card("_PREVIEW_runic_legs.png", "runic_legs", 2),
+    card("_PREVIEW_scaled_legs.png", "scaled_legs", 2),
+    card("_PREVIEW_seigaiha_legs.png", "seigaiha_legs", 2),
+    card("_PREVIEW_seme_legs.png", "seme_legs", 2),
+    card("_PREVIEW_seraph_legs.png", "seraph_legs", 2),
+    card("_PREVIEW_slotwork_legs.png", "slotwork_legs", 2),
+    card("_PREVIEW_spiral_legs.png", "spiral_legs", 2),
+    card("_PREVIEW_splint_legs.png", "splint_legs", 2),
+    card("_PREVIEW_strata_legs.png", "strata_legs", 2),
+    card("_PREVIEW_strigil_legs.png", "strigil_legs", 2),
+    card("_PREVIEW_studded_legs.png", "studded_legs", 2),
+    card("_PREVIEW_sunburst_legs.png", "sunburst_legs", 2),
+    card("_PREVIEW_survey_legs.png", "survey_legs", 2),
+    card("_PREVIEW_tally_legs.png", "tally_legs", 2),
+    card("_PREVIEW_tartan_legs.png", "tartan_legs", 2),
+    card("_PREVIEW_thighpanel_legs.png", "thighpanel_legs", 2),
+    card("_PREVIEW_truss_legs.png", "truss_legs", 2),
+    card("_PREVIEW_twill_legs.png", "twill_legs", 2),
+    card("_PREVIEW_vortice_legs.png", "vortice_legs", 2),
+    card("_PREVIEW_warkilt_legs.png", "warkilt_legs", 2),
+    card("_PREVIEW_warrant_legs.png", "warrant_legs", 2),
+    card("_PREVIEW_wave_legs.png", "wave_legs", 2),
+    card("_PREVIEW_zigzag_legs.png", "zigzag_legs", 2),
+  ].forEach(c => g.appendChild(c));
+})();
+</script>
+</div>
+
+<h2>Boots (75)</h2>
+<div class="grid" id="cat-Boots">
+<script>
+(function(){
+  const g = document.currentScript.parentElement;
+  [
+    card("_PREVIEW_ajoure_boots.png", "ajoure_boots", 2),
+    card("_PREVIEW_anneal_boots.png", "anneal_boots", 2),
+    card("_PREVIEW_arcade_boots.png", "arcade_boots", 2),
+    card("_PREVIEW_argyle_boots.png", "argyle_boots", 2),
+    card("_PREVIEW_ashlar_boots.png", "ashlar_boots", 2),
+    card("_PREVIEW_attrition_boots.png", "attrition_boots", 2),
+    card("_PREVIEW_basketweave_boots.png", "basketweave_boots", 2),
+    card("_PREVIEW_beadreel_boots.png", "beadreel_boots", 2),
+    card("_PREVIEW_cable_boots.png", "cable_boots", 2),
+    card("_PREVIEW_cadence_boots.png", "cadence_boots", 2),
+    card("_PREVIEW_canon_boots.png", "canon_boots", 2),
+    card("_PREVIEW_cascade_boots.png", "cascade_boots", 2),
+    card("_PREVIEW_chainmail_boots.png", "chainmail_boots", 2),
+    card("_PREVIEW_clasp_boots.png", "clasp_boots", 2),
+    card("_PREVIEW_claw_boots.png", "claw_boots", 2),
+    card("_PREVIEW_coffer_boots.png", "coffer_boots", 2),
+    card("_PREVIEW_colophon_boots.png", "colophon_boots", 2),
+    card("_PREVIEW_concentric_boots.png", "concentric_boots", 2),
+    card("_PREVIEW_confluence_boots.png", "confluence_boots", 2),
+    card("_PREVIEW_cosmati_boots.png", "cosmati_boots", 2),
+    card("_PREVIEW_counterchange_boots.png", "counterchange_boots", 2),
+    card("_PREVIEW_craquelure_boots.png", "craquelure_boots", 2),
+    card("_PREVIEW_cuff_boots.png", "cuff_boots", 2),
+    card("_PREVIEW_current_boots.png", "current_boots", 2),
+    card("_PREVIEW_datum_boots.png", "datum_boots", 2),
+    card("_PREVIEW_dendrite_boots.png", "dendrite_boots", 2),
+    card("_PREVIEW_dentil_boots.png", "dentil_boots", 2),
+    card("_PREVIEW_dovetail_boots.png", "dovetail_boots", 2),
+    card("_PREVIEW_eggdart_boots.png", "eggdart_boots", 2),
+    card("_PREVIEW_facet_boots.png", "facet_boots", 2),
+    card("_PREVIEW_festoon_boots.png", "festoon_boots", 2),
+    card("_PREVIEW_flowgrain_boots.png", "flowgrain_boots", 2),
+    card("_PREVIEW_gadroon_boots.png", "gadroon_boots", 2),
+    card("_PREVIEW_gambit_boots.png", "gambit_boots", 2),
+    card("_PREVIEW_gauge_boots.png", "gauge_boots", 2),
+    card("_PREVIEW_granulation_boots.png", "granulation_boots", 2),
+    card("_PREVIEW_greave_boots.png", "greave_boots", 2),
+    card("_PREVIEW_guilloche_boots.png", "guilloche_boots", 2),
+    card("_PREVIEW_hobnail_boots.png", "hobnail_boots", 2),
+    card("_PREVIEW_houndstooth_boots.png", "houndstooth_boots", 2),
+    card("_PREVIEW_labyrinth_boots.png", "labyrinth_boots", 2),
+    card("_PREVIEW_lace_boots.png", "lace_boots", 2),
+    card("_PREVIEW_lattice_boots.png", "lattice_boots", 2),
+    card("_PREVIEW_meander_boots.png", "meander_boots", 2),
+    card("_PREVIEW_mokume_boots.png", "mokume_boots", 2),
+    card("_PREVIEW_octagram_boots.png", "octagram_boots", 2),
+    card("_PREVIEW_ogee_boots.png", "ogee_boots", 2),
+    card("_PREVIEW_puttee_boots.png", "puttee_boots", 2),
+    card("_PREVIEW_quatrefoil_boots.png", "quatrefoil_boots", 2),
+    card("_PREVIEW_quilt_boots.png", "quilt_boots", 2),
+    card("_PREVIEW_quorum_boots.png", "quorum_boots", 2),
+    card("_PREVIEW_rivetshaft_boots.png", "rivetshaft_boots", 2),
+    card("_PREVIEW_runic_boots.png", "runic_boots", 2),
+    card("_PREVIEW_sabaton_boots.png", "sabaton_boots", 2),
+    card("_PREVIEW_scale_boots.png", "scale_boots", 2),
+    card("_PREVIEW_seigaiha_boots.png", "seigaiha_boots", 2),
+    card("_PREVIEW_seme_boots.png", "seme_boots", 2),
+    card("_PREVIEW_slotwork_boots.png", "slotwork_boots", 2),
+    card("_PREVIEW_spiral_boots.png", "spiral_boots", 2),
+    card("_PREVIEW_spur_boots.png", "spur_boots", 2),
+    card("_PREVIEW_strap_boots.png", "strap_boots", 2),
+    card("_PREVIEW_strata_boots.png", "strata_boots", 2),
+    card("_PREVIEW_strigil_boots.png", "strigil_boots", 2),
+    card("_PREVIEW_sunburst_boots.png", "sunburst_boots", 2),
+    card("_PREVIEW_survey_boots.png", "survey_boots", 2),
+    card("_PREVIEW_tally_boots.png", "tally_boots", 2),
+    card("_PREVIEW_tartan_boots.png", "tartan_boots", 2),
+    card("_PREVIEW_toecap_boots.png", "toecap_boots", 2),
+    card("_PREVIEW_truss_boots.png", "truss_boots", 2),
+    card("_PREVIEW_twill_boots.png", "twill_boots", 2),
+    card("_PREVIEW_vortice_boots.png", "vortice_boots", 2),
+    card("_PREVIEW_warrant_boots.png", "warrant_boots", 2),
+    card("_PREVIEW_wave_boots.png", "wave_boots", 2),
+    card("_PREVIEW_winged_boots.png", "winged_boots", 2),
+    card("_PREVIEW_zigzag_boots.png", "zigzag_boots", 2),
+  ].forEach(c => g.appendChild(c));
+})();
+</script>
+</div>
+
+<h2>Capes & Special (4)</h2>
+<div class="grid" id="cat-Capes_n_Special">
+<script>
+(function(){
+  const g = document.currentScript.parentElement;
+  [
+    card("_PREVIEW_cowl_with_hair_mage.png", "cowl_with_hair_mage", 2),
+    card("_PREVIEW_cowl_with_hair_ranger.png", "cowl_with_hair_ranger", 2),
+    card("_PREVIEW_hooded_mage.png", "hooded_mage", 2),
+    card("_PREVIEW_hooded_ranger.png", "hooded_ranger", 2),
+  ].forEach(c => g.appendChild(c));
+})();
+</script>
+</div>
+
+<h2>Other (4)</h2>
+<div class="grid" id="cat-Other">
+<script>
+(function(){
+  const g = document.currentScript.parentElement;
+  [
+    card("_PREVIEW_femhat_shift.png", "femhat_shift", 2),
+    card("_PREVIEW_honeycomb_axis19_fullset.png", "honeycomb_axis19_fullset", 2),
+    card("_PREVIEW_honeycomb_axis19_slots.png", "honeycomb_axis19_slots", 2),
+    card("_PREVIEW_plated_chest.png", "plated_chest", 2),
+  ].forEach(c => g.appendChild(c));
+})();
+</script>
+</div>
+</body></html>
