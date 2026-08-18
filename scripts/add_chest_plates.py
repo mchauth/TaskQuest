@@ -57,18 +57,20 @@ QA_X0, QA_X1, QA_Y0 = 30, 55, 16
 # instead of 3px. That is what finally killed the spike: at 2px the cap
 # overshot the body's own widest point and left a triangular tip.
 PROFILES = {
-    'narrow': ((1, 1, 1, 1),    (0, 0, 0, 0)),
-    'medium': ((1, 2, 2, 1),    (0, 0, 0, 0)),
-    'wide':   ((2, 3, 3, 2),    (1, 1, 1, 0)),
+    'narrow': ((0, 0, 0, 0),    (0, 0, 0, 0)),
+    'medium': ((0, 0, 0, 0),    (0, 0, 0, 0)),
+    'wide':   ((0, 0, 0, 0),    (0, 0, 0, 0)),
 }   #          front (right)     back (left)
+# Cap extension disabled: adding pixels outside the shirt silhouette caused
+# frame-by-frame position shift (arm moves → cap moves → morphing artifact).
+# All shading below operates on EXISTING pixels only, which is stable.
 SHADE = (1.30, 1.05, 0.95, 0.70)    # RIM / BASE / MID / UNDER per cap row
 OUTLINE_RGB = (12, 12, 16)          # near-black cap outline (matches the
                                     # face-outline family, not pure #000 —
                                     # sprite_qa flags lone pure-black)
-# Under-pauldron cast shadow: ramp over 3 rows, 4 cols (deepest right under
-# the cap, recovering downward) — gives the cap real separation from the arm.
-SHADOW_RAMP = (0.72, 0.84, 0.93)
-SHADOW_COLS = 4
+# Under-pauldron cast shadow disabled (was tied to cap position, also moved).
+SHADOW_RAMP = (0.88, 0.93, 0.97)
+SHADOW_COLS = 0
 TOP_RIM = 1.18                      # shoulder-row rim light
 LIP_HI, LIP_DARK = 1.14, 0.62       # plate bottom bevel / hard seam
 LIP_UNDER = (0.72, 0.86, 0.94)      # cast shadow ramp below the lip
@@ -238,15 +240,18 @@ def plate_frame(fr, profile=PROFILES['medium'], sep=None):
     torso_rows = np.flatnonzero(op[:, xl:xr + 1].any(axis=1))
     bot = int(torso_rows.max())
 
-    # 1) pauldron caps (lit plate pixels + outer outline)
+    # 1) pauldron caps — DISABLED: adding pixels outside the silhouette caused
+    #    frame-by-frame shift (arm moves → cap anchors move → morphing artifact).
+    #    All remaining shading operates on EXISTING pixels only.
     front, back = profile
     for side, edge, sh in ((-1, xl, sh_l), (1, xr, sh_r)):
         prof = back if side < 0 else front
         for dy, ext in enumerate(prof):
+            if ext == 0:
+                continue   # no extension → no outline pixel added
             y = sh + dy
             if y >= FH:
                 continue
-            # anchor on the actual silhouette edge at this row (sleeve slope)
             row = np.flatnonzero(op[y, xl - 2:xr + 3]) + xl - 2
             if len(row) == 0:
                 continue
@@ -260,14 +265,7 @@ def plate_frame(fr, profile=PROFILES['medium'], sep=None):
                 added += _put(fr, y, ax + side * o, col)
             added += _put(fr, y, ax + side * (ext + 1),
                           _outline_col(fr, y, ax + side * (ext + 1)))
-        # rounded top corner: outline cap above the shoulder row. Front only —
-        # on the back shoulder this pixel is what turned the cap into a spike.
-        if side > 0:
-            row = np.flatnonzero(op[sh, xl - 2:xr + 3]) + xl - 2
-            if sh - 1 >= QA_Y0 and len(row):
-                ax = int(row.max())
-                added += _put(fr, sh - 1, ax + side,
-                                 _outline_col(fr, sh - 1, ax + side))
+        # rounded top corner: skip entirely when caps are disabled
         # 2) under-pauldron cast shadow on existing pixels (ramped)
         for i, f in enumerate(SHADOW_RAMP):
             y = sh + len(prof) + i
