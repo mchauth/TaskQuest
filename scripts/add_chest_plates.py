@@ -67,7 +67,7 @@ OUTLINE_RGB = (12, 12, 16)          # near-black cap outline (matches the
                                     # sprite_qa flags lone pure-black)
 # Under-pauldron cast shadow: ramp over 3 rows, 4 cols (deepest right under
 # the cap, recovering downward) — gives the cap real separation from the arm.
-SHADOW_RAMP = (0.60, 0.72, 0.85)
+SHADOW_RAMP = (0.72, 0.84, 0.93)
 SHADOW_COLS = 4
 TOP_RIM = 1.18                      # shoulder-row rim light
 LIP_HI, LIP_DARK = 1.14, 0.62       # plate bottom bevel / hard seam
@@ -112,14 +112,14 @@ NECK_SHADOW = (0.70, 0.85, 0.94)
 #   SHOULDER_SEAM — dark line on the body edge under each cap, detaching the
 #              pauldron from the torso.
 #   ABDOMEN  — banded lame line below the lip.
-STERNUM_MUL = 0.46
+STERNUM_MUL = 0.52
 STERNUM_OFF = 2            # px LEFT of torso centre (Matt 8/1). Enlarges the
                            # right-hand pectoral, which is the plate that
                            # should dominate.
 PECT_INNER = 0.91          # shading approaching the sternum seam
 PECT_LOWER = 0.88          # shading at the pectoral's lower edge
 PECT_LIFT = 1.06           # lift at the pectoral's outer top
-SHOULDER_SEAM = 0.46
+SHOULDER_SEAM = 0.68
 SEAM_INSET = 2             # px the front (right) shoulder seam moves INWARD,
                            # growing the pauldron over the upper chest
 PAULDRON_LIFT = 1.09       # the enlarged pauldron face reads as raised plate
