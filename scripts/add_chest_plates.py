@@ -122,13 +122,12 @@ PECT_INNER = 0.91          # shading approaching the sternum seam
 PECT_LOWER = 0.88          # shading at the pectoral's lower edge
 PECT_LIFT = 1.06           # lift at the pectoral's outer top
 SHOULDER_SEAM = 0.68
-SEAM_INSET = 2             # px the front (right) shoulder seam moves INWARD,
-                           # growing the pauldron over the upper chest
+SEAM_INSET = 0             # DISABLED: inset pixels shift with arm position each
+                           # frame → morphing artifact. Set to 0 so seam only
+                           # touches the silhouette edge itself (stable).
 PAULDRON_LIFT = 1.09       # the enlarged pauldron face reads as raised plate
-SEAM_TAIL = 2              # extra rows the shoulder seam runs BELOW the cap
-                           # profile, closing the bottom of the pauldron —
-                           # without them the seam stopped short and the pad
-                           # read as an open arc rather than a closed pad
+SEAM_TAIL = 0              # DISABLED: tail rows below cap also anchor to moving
+                           # shoulder edge → frame-by-frame shift artifact.
 # Dome shading inside the pauldron: bright toward the crown (upper, inboard),
 # falling to shadow at the lower/outer rim, so the pad reads round rather than
 # a flat lifted patch.
@@ -410,11 +409,11 @@ def plate_frame(fr, profile=PROFILES['medium'], sep=None):
         # silhouette, which the skin layer outlines. Plates stay bounded by
         # sternum inboard, gorget above and band/lip below.)
 
-    # shoulder seam: detach each pauldron from the torso. The FRONT (right)
-    # seam is moved SEAM_INSET px inboard (Matt 8/1) so the pauldron covers
-    # more of the upper chest, and the face it encloses is lifted to read as
-    # raised plate.
-    for side, sh in ((-1, sh_l), (1, sh_r)):
+    # shoulder seam: detach each pauldron from the torso.
+    # SKIP entirely when caps are disabled — the seam anchors to the
+    # arm-silhouette edge which moves per frame, causing the same artifact.
+    _caps_enabled = any(e > 0 for e in front) or any(e > 0 for e in back)
+    for side, sh in ((-1, sh_l), (1, sh_r)) if _caps_enabled else ():
         prof = back if side < 0 else front
         inset = SEAM_INSET if side > 0 else 0
         nrows = len(prof) + SEAM_TAIL          # tail closes the pad's bottom
