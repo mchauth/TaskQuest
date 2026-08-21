@@ -71,7 +71,9 @@ OUTLINE_RGB = (12, 12, 16)          # near-black cap outline (matches the
 # Under-pauldron cast shadow disabled (was tied to cap position, also moved).
 SHADOW_RAMP = (0.88, 0.93, 0.97)
 SHADOW_COLS = 0
-TOP_RIM = 1.18                      # shoulder-row rim light
+TOP_RIM = 1.0                       # shoulder-row rim light DISABLED:
+                                    # sh_l/sh_r track the arm-silhouette edge
+                                    # which moves per idle frame → morphing.
 LIP_HI, LIP_DARK = 1.14, 0.62       # plate bottom bevel / hard seam
 LIP_UNDER = (0.72, 0.86, 0.94)      # cast shadow ramp below the lip
 
@@ -235,6 +237,11 @@ def plate_frame(fr, profile=PROFILES['medium'], sep=None):
         tops[x] = int(ys.min())
     sh_l = min(tops[xl], tops[xl + 1])
     sh_r = min(tops[xr - 1], tops[xr])
+    # Stable center-torso top — used as anchor for sheen/lip/gorget so those
+    # regions don't shift with the arm in each idle frame.
+    _cx = (xl + xr) // 2
+    _cx_ys = np.flatnonzero(op[:, _cx])
+    _sh_top_stable = int(_cx_ys.min()) if len(_cx_ys) > 0 else int(torso_rows.min())
 
     torso_rows = np.flatnonzero(op[:, xl:xr + 1].any(axis=1))
     bot = int(torso_rows.max())
@@ -284,7 +291,7 @@ def plate_frame(fr, profile=PROFILES['medium'], sep=None):
 
     # 4) metallic sheen on the breastplate — everything above the lip.
     #    Applied BEFORE the lip rows so the seam stays the darkest line.
-    sh_top = min(sh_l, sh_r)
+    sh_top = _sh_top_stable   # FIXED: was min(sh_l,sh_r) which moved per frame
     lip = sh_top + max(4, int(round(0.55 * (bot - sh_top))))
     y0, y1 = sh_top, lip - 1
     x0, x1 = max(0, xl), min(FW, xr + 1)
