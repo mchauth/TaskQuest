@@ -2031,6 +2031,9 @@ var LOOT_TABLE = [
   { id:'shirt_rare3',   name:'Solar Paladin Plate',    gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_rare3.png',   level:25, rarity:'legendary', classes:['warrior'] },
   { id:'pants_rare3',   name:'Solar Paladin Greaves',  gender:'m', slot:'pants',  file:'sprites/preview_assets/char/pants_rare3.png',   level:25, rarity:'legendary', classes:['warrior'] },
   { id:'boots_rare3',   name:'Solar Paladin Sabatons', gender:'m', slot:'boots',  file:'sprites/preview_assets/char/boots_rare3.png',   level:25, rarity:'legendary', classes:['warrior'] },
+  // ── Warrior tier 1 weapon: Iron Shortsword ────────────────────────
+  { id:'sword_warrior_t1',   name:'Iron Shortsword', gender:'m', slot:'weapon', file:'sprites/preview_assets/char/sword_warrior_t1_m.png', level:1, rarity:'common', classes:['warrior'] },
+  { id:'sword_warrior_t1_f', name:'Iron Shortsword', gender:'f', slot:'weapon', file:'sprites/preview_assets/char/sword_warrior_t1_f.png', level:1, rarity:'common', classes:['warrior'] },
   // ── Mage tier 1: Apprentice Robes ────────────────────────────────
   { id:'shirt_mage1',   name:'Apprentice Robe',     gender:'m', slot:'shirt',  file:'sprites/preview_assets/char/shirt_mage1.png',   level:1, rarity:'common', classes:['mage'] },
   { id:'pants_mage1',   name:'Apprentice Leggings', gender:'m', slot:'pants',  file:'sprites/preview_assets/char/pants_mage1.png',   level:1, rarity:'common', classes:['mage'] },
@@ -3033,6 +3036,7 @@ var INV_SLOTS = [
   { slot:'shirt', label:'Top' },
   { slot:'pants', label:'Bottoms' },
   { slot:'boots', label:'Footwear' },
+  { slot:'weapon', label:'Weapon' },
 ];
 
 function renderInventory() {
@@ -3648,6 +3652,7 @@ function getCharLayers() {
     if (it.gender && it.gender !== g) return null;
     return it.file;
   }
+  var swordFile = lootFile('weapon') || (p + 'sword_' + g + '.png');
   var helmetFile = lootFile('helmet') || null;
   // Partial hats (cone/Robin Hood) only cover the top — hair shows at sides
   var helmetItem = helmetFile && eq.helmet
@@ -3664,7 +3669,7 @@ function getCharLayers() {
     pants: lootFile('pants') || null,
     shirt: lootFile('shirt') || null,
     skin:  p + 'skin_' + g + sn + '.png',
-    sword: p + 'sword_' + g + '.png',
+    sword: swordFile,
     hair:  hideHair ? null : p + 'hair_' + g + ((hoodStyle - 1) * 5 + hn) + '.png',
     helmet: helmetFile,
   };
