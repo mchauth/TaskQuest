@@ -869,41 +869,35 @@ def build(base, cls, mode=None, force=None):
     ok = sheet_carries(base, cls, mode) if force is None else force
     out = np.zeros_like(base)
 
-    # FIX: compute the truss framework from the intersection of the IDLE frames
-    # (row 0, fr0-4).  The all-frames intersection gave only ~11 stable pixels
-    # because arm movement across walk/run heavily changes the shirt silhouette.
-    # The idle-only intersection gives ~120 stable pixels — enough for a full
-    # truss — and those pixels are present in every idle frame, so the pattern
-    # never flickers during idle.  Other poses get the same fixed grid clipped
-    # to their own alpha, keeping the bars visually anchored.
+    # FIX: compute the truss framework from the INTERSECTION of all active
+    # frames' alpha masks — pixels present in every idle frame.  Bars drawn
+    # on those pixels never move relative to the shirt regardless of per-frame
+    # silhouette changes, eliminating the frame-to-frame pattern shift.
     k = KDOF[cls] if mode != 'swapped' else SWAP_K[cls]
     dark_c, field_c, bar_c, joint_c = PAL[cls]
 
-    IDLE_FRAMES = range(5)   # row 0, cols 0-4
-
-    ref_a = None
-    for fi in IDLE_FRAMES:
+    stable_a = None
+    for fi in range(SLEEP_FROM):
         r, c = fi // COLS, fi % COLS
         sl0 = (slice(r * FH, (r + 1) * FH), slice(c * FW, (c + 1) * FW))
         a0 = base[sl0][..., 3] > 0
         if not a0.any():
             continue
-        ref_a = a0.copy() if ref_a is None else (ref_a & a0)
+        stable_a = a0.copy() if stable_a is None else (stable_a & a0)
 
     ref_allb = ref_allj = ref_alld = None
-    if ref_a is not None and ok:
-        allb = np.zeros(ref_a.shape, bool)
-        allj = np.zeros(ref_a.shape, bool)
-        alld = np.zeros(ref_a.shape, bool)
-        for comp in parts_of(ref_a):
+    if stable_a is not None and ok:
+        allb = np.zeros(stable_a.shape, bool)
+        allj = np.zeros(stable_a.shape, bool)
+        alld = np.zeros(stable_a.shape, bool)
+        for comp in parts_of(stable_a):
             got = truss_of(comp, k, mode)
             if got is None:
                 continue
             J, E, PX = got[0], got[1], got[2]
             b, j, d = paint(comp, J, E, PX)
             allb |= b; allj |= j; alld |= d
-        if allb.any() or allj.any() or alld.any():
-            ref_allb, ref_allj, ref_alld = allb, allj, alld
+        ref_allb, ref_allj, ref_alld = allb, allj, alld
 
     for fi in range(NFR):
         r, c = fi // COLS, fi % COLS

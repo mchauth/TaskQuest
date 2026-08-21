@@ -668,36 +668,32 @@ def build(base, cls, mode=None, force=None):
     ok = sheet_carries(base, cls, mode) if force is None else force
     out = np.zeros_like(base)
 
-    # FIX: compute ornament from the intersection of the IDLE frames (row 0,
-    # fr0-4). The all-frames intersection gave only ~11 stable pixels; the
-    # idle-only intersection gives ~120 — enough for a full ornament — and
-    # ensures perfect idle stability with no flickering.
+    # FIX: compute ornament from the INTERSECTION of all active frames' alpha
+    # masks — pixels present in every idle frame.  Those pixels are stable so
+    # the rib/crest pattern never shifts between animation frames.
     crest_c, mid_c, dark_c = PAL[cls]
     n = NPOLE[cls] if mode != 'swapped' else SWAP_N[cls]
 
-    IDLE_FRAMES = range(5)   # row 0, cols 0-4
-
-    ref_a = None
-    for fi in IDLE_FRAMES:
+    stable_a = None
+    for fi in range(SLEEP_FROM):
         r, c = fi // COLS, fi % COLS
         sl0 = (slice(r * FH, (r + 1) * FH), slice(c * FW, (c + 1) * FW))
         a0 = base[sl0][..., 3] > 0
         if not a0.any():
             continue
-        ref_a = a0.copy() if ref_a is None else (ref_a & a0)
+        stable_a = a0.copy() if stable_a is None else (stable_a & a0)
 
     ref_allc = ref_alld = None
-    if ref_a is not None and ok:
-        allc = np.zeros(ref_a.shape, bool)
-        alld = np.zeros(ref_a.shape, bool)
-        for comp in parts_of(ref_a):
+    if stable_a is not None and ok:
+        allc = np.zeros(stable_a.shape, bool)
+        alld = np.zeros(stable_a.shape, bool)
+        for comp in parts_of(stable_a):
             got = ornament(comp, n, mode)
             if got is None:
                 continue
             crest, dark, _u, _f = got
             allc |= crest; alld |= dark
-        if allc.any() or alld.any():
-            ref_allc, ref_alld = allc, alld
+        ref_allc, ref_alld = allc, alld
 
     for fi in range(NFR):
         r, c = fi // COLS, fi % COLS
