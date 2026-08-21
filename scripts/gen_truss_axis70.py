@@ -868,6 +868,45 @@ def build(base, cls, mode=None, force=None):
     D, M, L = BODY[cls]
     ok = sheet_carries(base, cls, mode) if force is None else force
     out = np.zeros_like(base)
+
+    # FIX: compute framework ONCE from the first active frame so the truss
+    # pattern does not shift as the silhouette changes between idle frames.
+    # For each subsequent frame we translate by the centroid offset only.
+    k = KDOF[cls] if mode != 'swapped' else SWAP_K[cls]
+    dark_c, field_c, bar_c, joint_c = PAL[cls]
+    ref_parts_cache = None   # [(cy, cx, J, E, PX), ...] or None per part
+
+    def _paint_cached(sl, a, parts_now):
+        for y, x in np.argwhere(a):
+            put(out[sl], y, x, field_c)
+        allb = np.zeros(a.shape, bool)
+        allj = np.zeros(a.shape, bool)
+        alld = np.zeros(a.shape, bool)
+        for i, comp in enumerate(parts_now):
+            if i >= len(ref_parts_cache) or ref_parts_cache[i] is None:
+                continue
+            cy0, cx0, J0, E0, PX0 = ref_parts_cache[i]
+            ys, xs = np.nonzero(comp)
+            if len(ys) == 0:
+                continue
+            dy = round(float(ys.mean()) - cy0)
+            dx = round(float(xs.mean()) - cx0)
+            J2  = [(y + dy, x + dx) for y, x in J0]
+            PX2 = {e: [(y + dy, x + dx) for y, x in pxs] for e, pxs in PX0.items()}
+            b, j, d = paint(comp, J2, E0, PX2)
+            allb |= b
+            allj |= j
+            alld |= d
+        for y, x in np.argwhere(alld):
+            if a[y, x]:
+                put(out[sl], y, x, dark_c)
+        for y, x in np.argwhere(allb):
+            if a[y, x]:
+                put(out[sl], y, x, bar_c)
+        for y, x in np.argwhere(allj):
+            if a[y, x]:
+                put(out[sl], y, x, joint_c)
+
     for fi in range(NFR):
         r, c = fi // COLS, fi % COLS
         sl = (slice(r * FH, (r + 1) * FH), slice(c * FW, (c + 1) * FW))
@@ -878,7 +917,33 @@ def build(base, cls, mode=None, force=None):
         recolor(src, out[sl], a, D, M, L)
         if fi >= SLEEP_FROM or not ok:
             continue
-        build_frame(out[sl], a, cls, mode)
+        parts = parts_of(a)
+        if ref_parts_cache is None:
+            # First active frame: compute and cache framework
+            ref_parts_cache = []
+            for y, x in np.argwhere(a):
+                put(out[sl], y, x, field_c)
+            allb = np.zeros(a.shape, bool)
+            allj = np.zeros(a.shape, bool)
+            alld = np.zeros(a.shape, bool)
+            for comp in parts:
+                got = truss_of(comp, k, mode)
+                if got is None:
+                    ref_parts_cache.append(None)
+                    continue
+                J, E, PX = got[0], got[1], got[2]
+                ys, xs = np.nonzero(comp)
+                ref_parts_cache.append((float(ys.mean()), float(xs.mean()), J, E, PX))
+                b, j, d = paint(comp, J, E, PX)
+                allb |= b; allj |= j; alld |= d
+            for y, x in np.argwhere(alld):
+                put(out[sl], y, x, dark_c)
+            for y, x in np.argwhere(allb):
+                put(out[sl], y, x, bar_c)
+            for y, x in np.argwhere(allj):
+                put(out[sl], y, x, joint_c)
+        else:
+            _paint_cached(sl, a, parts)
     return out, ok
 
 

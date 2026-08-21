@@ -667,6 +667,27 @@ def build(base, cls, mode=None, force=None):
     D, M, L = BODY[cls]
     ok = sheet_carries(base, cls, mode) if force is None else force
     out = np.zeros_like(base)
+
+    # FIX: cache crest/dark masks from frame 0 and translate for each
+    # subsequent frame by the centroid offset, so the anneal pattern does not
+    # re-solve to a different layout when the silhouette shifts between idle
+    # animation frames.
+    crest_c, mid_c, dark_c = PAL[cls]
+    ref_allc = None
+    ref_alld = None
+    ref_cy = ref_cx = 0.0
+
+    def _shift_mask(mask, dy, dx):
+        result = np.zeros_like(mask)
+        h, w = mask.shape
+        sy1, sy2 = max(0, -dy), min(h, h - dy)
+        sx1, sx2 = max(0, -dx), min(w, w - dx)
+        dy1, dy2 = max(0, dy), min(h, h + dy)
+        dx1, dx2 = max(0, dx), min(w, w + dx)
+        if sy2 > sy1 and sx2 > sx1 and dy2 > dy1 and dx2 > dx1:
+            result[dy1:dy2, dx1:dx2] = mask[sy1:sy2, sx1:sx2]
+        return result
+
     for fi in range(NFR):
         r, c = fi // COLS, fi % COLS
         sl = (slice(r * FH, (r + 1) * FH), slice(c * FW, (c + 1) * FW))
@@ -677,7 +698,25 @@ def build(base, cls, mode=None, force=None):
         recolor(src, out[sl], a, D, M, L)
         if fi >= SLEEP_FROM or not ok:
             continue
-        build_frame(out[sl], a, cls, mode)
+        ys, xs = np.nonzero(a)
+        cy, cx = float(ys.mean()), float(xs.mean())
+        if ref_allc is None:
+            # First active frame: compute and cache masks
+            got = build_frame(out[sl], a, cls, mode)
+            ref_allc = got[0] if got is not None else np.zeros(a.shape, bool)
+            ref_alld = got[1] if got is not None else np.zeros(a.shape, bool)
+            ref_cy, ref_cx = cy, cx
+        else:
+            # Subsequent frames: translate cached masks and paint
+            dy, dx = round(cy - ref_cy), round(cx - ref_cx)
+            allc = _shift_mask(ref_allc, dy, dx) & a
+            alld = _shift_mask(ref_alld, dy, dx) & a
+            for y, x in np.argwhere(a):
+                put(out[sl], y, x, mid_c)
+            for y, x in np.argwhere(alld):
+                put(out[sl], y, x, dark_c)
+            for y, x in np.argwhere(allc):
+                put(out[sl], y, x, crest_c)
     return out, ok
 
 
