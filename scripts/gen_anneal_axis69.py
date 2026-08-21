@@ -668,32 +668,25 @@ def build(base, cls, mode=None, force=None):
     ok = sheet_carries(base, cls, mode) if force is None else force
     out = np.zeros_like(base)
 
-    # FIX: compute ornament from the INTERSECTION of all active frames' alpha
-    # masks — pixels present in every idle frame.  Those pixels are stable so
-    # the rib/crest pattern never shifts between animation frames.
+    # FIX: cache crest/dark masks from frame 0 and translate for each
+    # subsequent frame by the centroid offset, so the anneal pattern does not
+    # re-solve to a different layout when the silhouette shifts between idle
+    # animation frames.
     crest_c, mid_c, dark_c = PAL[cls]
-    n = NPOLE[cls] if mode != 'swapped' else SWAP_N[cls]
+    ref_allc = None
+    ref_alld = None
+    ref_cy = ref_cx = 0.0
 
-    stable_a = None
-    for fi in range(SLEEP_FROM):
-        r, c = fi // COLS, fi % COLS
-        sl0 = (slice(r * FH, (r + 1) * FH), slice(c * FW, (c + 1) * FW))
-        a0 = base[sl0][..., 3] > 0
-        if not a0.any():
-            continue
-        stable_a = a0.copy() if stable_a is None else (stable_a & a0)
-
-    ref_allc = ref_alld = None
-    if stable_a is not None and ok:
-        allc = np.zeros(stable_a.shape, bool)
-        alld = np.zeros(stable_a.shape, bool)
-        for comp in parts_of(stable_a):
-            got = ornament(comp, n, mode)
-            if got is None:
-                continue
-            crest, dark, _u, _f = got
-            allc |= crest; alld |= dark
-        ref_allc, ref_alld = allc, alld
+    def _shift_mask(mask, dy, dx):
+        result = np.zeros_like(mask)
+        h, w = mask.shape
+        sy1, sy2 = max(0, -dy), min(h, h - dy)
+        sx1, sx2 = max(0, -dx), min(w, w - dx)
+        dy1, dy2 = max(0, dy), min(h, h + dy)
+        dx1, dx2 = max(0, dx), min(w, w + dx)
+        if sy2 > sy1 and sx2 > sx1 and dy2 > dy1 and dx2 > dx1:
+            result[dy1:dy2, dx1:dx2] = mask[sy1:sy2, sx1:sx2]
+        return result
 
     for fi in range(NFR):
         r, c = fi // COLS, fi % COLS
@@ -705,15 +698,25 @@ def build(base, cls, mode=None, force=None):
         recolor(src, out[sl], a, D, M, L)
         if fi >= SLEEP_FROM or not ok:
             continue
-        for y, x in np.argwhere(a):
-            put(out[sl], y, x, mid_c)
-        if ref_allc is not None:
-            for y, x in np.argwhere(ref_alld):
-                if a[y, x]:
-                    put(out[sl], y, x, dark_c)
-            for y, x in np.argwhere(ref_allc):
-                if a[y, x]:
-                    put(out[sl], y, x, crest_c)
+        ys, xs = np.nonzero(a)
+        cy, cx = float(ys.mean()), float(xs.mean())
+        if ref_allc is None:
+            # First active frame: compute and cache masks
+            got = build_frame(out[sl], a, cls, mode)
+            ref_allc = got[0] if got is not None else np.zeros(a.shape, bool)
+            ref_alld = got[1] if got is not None else np.zeros(a.shape, bool)
+            ref_cy, ref_cx = cy, cx
+        else:
+            # Subsequent frames: translate cached masks and paint
+            dy, dx = round(cy - ref_cy), round(cx - ref_cx)
+            allc = _shift_mask(ref_allc, dy, dx) & a
+            alld = _shift_mask(ref_alld, dy, dx) & a
+            for y, x in np.argwhere(a):
+                put(out[sl], y, x, mid_c)
+            for y, x in np.argwhere(alld):
+                put(out[sl], y, x, dark_c)
+            for y, x in np.argwhere(allc):
+                put(out[sl], y, x, crest_c)
     return out, ok
 
 
