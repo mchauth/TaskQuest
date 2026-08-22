@@ -4125,7 +4125,15 @@ setInterval(function() {
     if (ts - qsCharLast > 1000 / anim.fps) {
       qsCharFrame = (qsCharFrame + 1) % anim.frames;
       qsCharLast = ts;
-      qsSetCharFrame(anim, qsCharFrame);
+      // Combat animation: mage/ranger use extend sequence (last 2 frames only)
+      var displayFrame = qsCharFrame;
+      if (qsAnim === 'combat') {
+        var _qsCls = (S.customization && S.customization.charClass) || 'warrior';
+        if (_qsCls !== 'warrior') {
+          displayFrame = [5,4,4,4,5,5][qsCharFrame % 6];
+        }
+      }
+      qsSetCharFrame(anim, displayFrame);
     }
     if (ts - qsCfLast > 1000 / CF_FPS) {
       qsCfFrame = (qsCfFrame + 1) % 16;
