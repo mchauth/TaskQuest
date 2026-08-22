@@ -538,7 +538,7 @@ hr{border:none;border-top:1px solid var(--border)}
       <img class="hs-prop" id="hsProp5" src="" alt="" style="display:none">
       <img class="hs-prop" id="hsProp6" src="" alt="" style="display:none">
       <!-- Character (skin base → clothing → weapon → hair) -->
-      <div class="hs-char-wrap">
+      <div class="hs-char-wrap" onclick="hsDoSlash()" title="Tap to swing!" style="cursor:pointer">
         <div class="hs-char-layer" id="hsSkin"></div>
         <div class="hs-char-layer" id="hsPants"></div>
         <div class="hs-char-layer" id="hsBoots"></div>
@@ -1906,9 +1906,28 @@ function hsSetCharFrame(anim, f) {
   });
 }
 
+var _hsSlashing = false;
+var _hsSlashTimer = null;
+function hsDoSlash() {
+  if (_hsSlashing) return;
+  _hsSlashing = true;
+  var SLASH = { row:5, frames:6, fps:10 };
+  var frame = 0;
+  clearInterval(_hsSlashTimer);
+  _hsSlashTimer = setInterval(function() {
+    hsSetCharFrame(SLASH, frame);
+    frame++;
+    if (frame >= SLASH.frames) {
+      clearInterval(_hsSlashTimer);
+      _hsSlashing = false;
+      hsSetCharFrame(HS_ANIM.idle, 0);
+    }
+  }, Math.round(1000 / SLASH.fps));
+}
+
 function hsLoop(ts) {
   var anim = HS_ANIM.idle;
-  if (ts - hsCharLast > 1000 / anim.fps) {
+  if (!_hsSlashing && ts - hsCharLast > 1000 / anim.fps) {
     hsCharFrame = (hsCharFrame + 1) % anim.frames;
     hsCharLast = ts;
     hsSetCharFrame(anim, hsCharFrame);
