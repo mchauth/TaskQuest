@@ -3229,7 +3229,7 @@ function openCombatOverlay(xpEarned, goldEarned, lootItem) {
 
   // Start hero slash animation (class-aware: warrior=full swing, mage/ranger=extend only)
   var _coCls = (S.customization && S.customization.charClass) || 'warrior';
-  var _coFrameSeq = (_coCls === 'warrior') ? [0,1,2,3,4,5] : [0,0,4,4,5,0];
+  var _coFrameSeq = (_coCls === 'warrior') ? [0,1,2,3,4,5] : [0,0,0,4,5,0];
   var _coSeqIdx = 0;
   clearInterval(_coSlashTimer);
   _coSlashTimer = setInterval(function() {
@@ -3240,7 +3240,7 @@ function openCombatOverlay(xpEarned, goldEarned, lootItem) {
       var el = document.getElementById(heroMap[k]);
       if (el) el.style.backgroundPosition = x+'px '+y+'px';
     });
-  }, 1000 / _coSlashAnim.fps);
+  }, 200); // 5fps — matches quest scene combat loop pace
 
   // Sequence: fight → enemy sinks → XP flash → (loot chest)
   setTimeout(function() {
@@ -4060,7 +4060,7 @@ setInterval(function() {
     idle:   { row:0, frames:5, fps:6 },
     walk:   { row:1, frames:8, fps:10 },
     sleep:  { row:6, frames:2, fps:1.2, startCol:8 }, // frames 8-9: lying on ground
-    combat: { row:5, frames:6, fps:10 },              // row 5: slash attack
+    combat: { row:5, frames:6, fps:5  },              // row 5: slash attack (5fps = 200ms/frame for natural gap between cycles)
   };
   var CF_SRCS = Array.from({length:16}, function(_,f){ return 'sprites/preview_assets/anim/fire_f'+f+'.png'; });
   var CF_FPS = 12;
@@ -4130,8 +4130,8 @@ setInterval(function() {
       if (qsAnim === 'combat') {
         var _qsCls = (S.customization && S.customization.charClass) || 'warrior';
         if (_qsCls !== 'warrior') {
-          // idle(x2) → extend → extend-hold → retract → idle: mirrors the tap animation rhythm
-          displayFrame = [0,0,4,4,5,0][qsCharFrame % 6];
+          // idle(x3=600ms) → extend(200ms) → retract(200ms) → idle(200ms): clear gap at 5fps
+          displayFrame = [0,0,0,4,5,0][qsCharFrame % 6];
         }
       }
       qsSetCharFrame(anim, displayFrame);
