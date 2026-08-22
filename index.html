@@ -1911,13 +1911,17 @@ var _hsSlashTimer = null;
 function hsDoSlash() {
   if (_hsSlashing) return;
   _hsSlashing = true;
-  var SLASH = { row:5, frames:6, fps:10 };
-  var frame = 0;
+  var SLASH = { row:5, fps:10 };
+  var cls = (S.customization && S.customization.charClass) || 'warrior';
+  // Warriors: full 6-frame sword swing. Mage/ranger: extend arm using only
+  // the last 2 frames (fr54→fr55) — arm raises to mid-height and lowers back.
+  var frameSeq = (cls === 'warrior') ? [0,1,2,3,4,5] : [5,4,4,4,5,5];
+  var seqIdx = 0;
   clearInterval(_hsSlashTimer);
   _hsSlashTimer = setInterval(function() {
-    hsSetCharFrame(SLASH, frame);
-    frame++;
-    if (frame >= SLASH.frames) {
+    hsSetCharFrame(SLASH, frameSeq[seqIdx]);
+    seqIdx++;
+    if (seqIdx >= frameSeq.length) {
       clearInterval(_hsSlashTimer);
       _hsSlashing = false;
       hsSetCharFrame(HS_ANIM.idle, 0);
@@ -3223,12 +3227,15 @@ function openCombatOverlay(xpEarned, goldEarned, lootItem) {
     if (el) el.style.backgroundPosition = (-_coPortalFrame * 128) + 'px 0px';
   }, 80);
 
-  // Start hero slash animation
-  _coSlashFrame = 0;
+  // Start hero slash animation (class-aware: warrior=full swing, mage/ranger=extend only)
+  var _coCls = (S.customization && S.customization.charClass) || 'warrior';
+  var _coFrameSeq = (_coCls === 'warrior') ? [0,1,2,3,4,5] : [5,4,4,4,5,5];
+  var _coSeqIdx = 0;
   clearInterval(_coSlashTimer);
   _coSlashTimer = setInterval(function() {
-    _coSlashFrame = (_coSlashFrame + 1) % _coSlashAnim.frames;
-    var x = -_coSlashFrame * 80, y = -(_coSlashAnim.row * 64);
+    var f = _coFrameSeq[_coSeqIdx % _coFrameSeq.length];
+    _coSeqIdx++;
+    var x = -f * 80, y = -(_coSlashAnim.row * 64);
     Object.keys(heroMap).forEach(function(k) {
       var el = document.getElementById(heroMap[k]);
       if (el) el.style.backgroundPosition = x+'px '+y+'px';
