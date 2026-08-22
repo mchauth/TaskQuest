@@ -3722,7 +3722,10 @@ function getCharLayers() {
     if (it.gender && it.gender !== g) return null;
     return it.file;
   }
-  var swordFile = lootFile('weapon') || (p + 'sword_' + g + '.png');
+  var _defaultWeapon = cls === 'mage'   ? (p + 'staff_mage_t1_'    + g + '.png') :
+                       cls === 'ranger' ? (p + 'bow_ranger_t1_'    + g + '.png') :
+                                          (p + 'sword_warrior_t1_' + g + '.png');
+  var swordFile = lootFile('weapon') || _defaultWeapon;
   var helmetFile = lootFile('helmet') || null;
   // Partial hats (cone/Robin Hood) only cover the top — hair shows at sides
   var helmetItem = helmetFile && eq.helmet
