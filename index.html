@@ -4060,7 +4060,7 @@ setInterval(function() {
     idle:   { row:0, frames:5, fps:6 },
     walk:   { row:1, frames:8, fps:10 },
     sleep:  { row:6, frames:2, fps:1.2, startCol:8 }, // frames 8-9: lying on ground
-    combat: { row:5, frames:6, fps:5  },              // row 5: slash attack (5fps = 200ms/frame for natural gap between cycles)
+    combat: { row:5, frames:6, fps:10 },              // row 5: slash attack
   };
   var CF_SRCS = Array.from({length:16}, function(_,f){ return 'sprites/preview_assets/anim/fire_f'+f+'.png'; });
   var CF_FPS = 12;
@@ -4070,6 +4070,8 @@ setInterval(function() {
   var qsCharLast = 0, qsCfLast = 0, qsPortalLast = 0;
   var qsPortalFrame = 0;
   var qsRunning = false;
+  var qsSlashCooldown = 0; // timestamp after which next slash cycle may begin
+  var QS_SLASH_PAUSE = 1500; // ms pause between slash cycles
 
   function qsInit() {
     BG_LAYERS.forEach(function(src, i) {
@@ -4123,18 +4125,30 @@ setInterval(function() {
   function qsLoop(ts) {
     var anim = ANIM[qsAnim];
     if (ts - qsCharLast > 1000 / anim.fps) {
-      qsCharFrame = (qsCharFrame + 1) % anim.frames;
       qsCharLast = ts;
-      // Combat animation: mage/ranger use extend sequence (last 2 frames only)
-      var displayFrame = qsCharFrame;
+
       if (qsAnim === 'combat') {
         var _qsCls = (S.customization && S.customization.charClass) || 'warrior';
-        if (_qsCls !== 'warrior') {
-          // idle(x3=600ms) → extend(200ms) → retract(200ms) → idle(200ms): clear gap at 5fps
-          displayFrame = [0,0,0,4,5,0][qsCharFrame % 6];
+        // If in cooldown pause, hold at idle frame 0
+        if (ts < qsSlashCooldown) {
+          qsSetCharFrame(anim, 0);
+        } else {
+          // Advance through the slash cycle
+          qsCharFrame = (qsCharFrame + 1) % anim.frames;
+          var displayFrame = qsCharFrame;
+          if (_qsCls !== 'warrior') {
+            displayFrame = [0,0,0,4,5,0][qsCharFrame % 6];
+          }
+          qsSetCharFrame(anim, displayFrame);
+          // When cycle completes, start cooldown
+          if (qsCharFrame === anim.frames - 1) {
+            qsSlashCooldown = ts + QS_SLASH_PAUSE;
+          }
         }
+      } else {
+        qsCharFrame = (qsCharFrame + 1) % anim.frames;
+        qsSetCharFrame(anim, qsCharFrame);
       }
-      qsSetCharFrame(anim, displayFrame);
     }
     if (ts - qsCfLast > 1000 / CF_FPS) {
       qsCfFrame = (qsCfFrame + 1) % 16;
@@ -4162,7 +4176,7 @@ setInterval(function() {
     // Switch animation state based on active quests
     var newAnim = active > 0 ? 'combat' : 'sleep';
     if (newAnim !== qsAnim) {
-      qsAnim = newAnim; qsCharFrame = 0; qsPortalFrame = 0;
+      qsAnim = newAnim; qsCharFrame = 0; qsPortalFrame = 0; qsSlashCooldown = 0;
       el = document.getElementById('qsLabel');
       if(el){ el.style.display = active > 0 ? 'none' : ''; el.textContent = '💤 Resting by camp'; }
       // Show fire only when resting
