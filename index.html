@@ -3229,7 +3229,7 @@ function openCombatOverlay(xpEarned, goldEarned, lootItem) {
 
   // Start hero slash animation (class-aware: warrior=full swing, mage/ranger=extend only)
   var _coCls = (S.customization && S.customization.charClass) || 'warrior';
-  var _coFrameSeq = (_coCls === 'warrior') ? [0,1,2,3,4,5] : [5,4,4,4,5,5];
+  var _coFrameSeq = (_coCls === 'warrior') ? [0,1,2,3,4,5] : [0,0,4,4,5,0];
   var _coSeqIdx = 0;
   clearInterval(_coSlashTimer);
   _coSlashTimer = setInterval(function() {
@@ -4130,7 +4130,8 @@ setInterval(function() {
       if (qsAnim === 'combat') {
         var _qsCls = (S.customization && S.customization.charClass) || 'warrior';
         if (_qsCls !== 'warrior') {
-          displayFrame = [5,4,4,4,5,5][qsCharFrame % 6];
+          // idle(x2) → extend → extend-hold → retract → idle: mirrors the tap animation rhythm
+          displayFrame = [0,0,4,4,5,0][qsCharFrame % 6];
         }
       }
       qsSetCharFrame(anim, displayFrame);
