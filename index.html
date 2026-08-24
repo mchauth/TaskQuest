@@ -4124,11 +4124,13 @@ setInterval(function() {
 
   function qsLoop(ts) {
     var anim = ANIM[qsAnim];
-    if (ts - qsCharLast > 1000 / anim.fps) {
+    var _qsCls2 = (S.customization && S.customization.charClass) || 'warrior';
+    // Mage/ranger combat plays at half fps so the extend feels deliberate
+    var effectiveFps = (qsAnim === 'combat' && _qsCls2 !== 'warrior') ? anim.fps / 2 : anim.fps;
+    if (ts - qsCharLast > 1000 / effectiveFps) {
       qsCharLast = ts;
 
       if (qsAnim === 'combat') {
-        var _qsCls = (S.customization && S.customization.charClass) || 'warrior';
         // If in cooldown pause, hold at idle frame 0
         if (ts < qsSlashCooldown) {
           qsSetCharFrame(anim, 0);
@@ -4136,7 +4138,7 @@ setInterval(function() {
           // Advance through the slash cycle
           qsCharFrame = (qsCharFrame + 1) % anim.frames;
           var displayFrame = qsCharFrame;
-          if (_qsCls !== 'warrior') {
+          if (_qsCls2 !== 'warrior') {
             displayFrame = [0,0,0,4,5,0][qsCharFrame % 6];
           }
           qsSetCharFrame(anim, displayFrame);
