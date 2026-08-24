@@ -193,9 +193,9 @@ def build_sheet(f0, source_path, out_path, weapon_type='sword',
 
         if weapon_type == 'sword':
             # Sword: full slash arc with rotation and trail.
-            # Add 180° to correct grip/blade orientation during swing.
+            # +180° flips grip/blade so grip stays in hand during swing.
             if fi in [51, 52, 53]:
-                angle_delta = SLASH_ANGLES.get(fi, 0.0)
+                angle_delta = SLASH_ANGLES.get(fi, 0.0) + 180.0
                 pix2 = rotate_pixels(f0, angle_delta, cx0_f0, cy0_f0)
                 pix2 = translate_pixels(pix2, dx, dy)
                 stamp(out, pix2, gx, gy)
