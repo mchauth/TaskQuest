@@ -4126,8 +4126,7 @@ setInterval(function() {
     var anim = ANIM[qsAnim];
     var _qsCls2 = (S.customization && S.customization.charClass) || 'warrior';
     // Mage/ranger combat plays at half fps so the extend feels deliberate
-    var effectiveFps = (qsAnim === 'combat' && _qsCls2 !== 'warrior') ? anim.fps / 2 : anim.fps;
-    if (ts - qsCharLast > 1000 / effectiveFps) {
+    if (ts - qsCharLast > 1000 / anim.fps) {
       qsCharLast = ts;
 
       if (qsAnim === 'combat') {
