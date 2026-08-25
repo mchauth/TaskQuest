@@ -4071,6 +4071,7 @@ setInterval(function() {
   var qsPortalFrame = 0;
   var qsRunning = false;
   var qsSlashCooldown = 0; // timestamp after which next slash cycle may begin
+  var qsIdleLast = 0, qsIdleFrame = 0; // idle animation state during combat cooldown
   var QS_SLASH_PAUSE = 1500; // ms pause between slash cycles
 
   function qsInit() {
@@ -4125,28 +4126,35 @@ setInterval(function() {
   function qsLoop(ts) {
     var anim = ANIM[qsAnim];
     var _qsCls2 = (S.customization && S.customization.charClass) || 'warrior';
-    // Mage/ranger combat plays at half fps so the extend feels deliberate
-    if (ts - qsCharLast > 1000 / anim.fps) {
-      qsCharLast = ts;
 
-      if (qsAnim === 'combat') {
-        // If in cooldown pause, hold at idle frame 0
-        if (ts < qsSlashCooldown) {
-          qsSetCharFrame(anim, 0);
-        } else {
-          // Advance through the slash cycle
+    if (qsAnim === 'combat') {
+      if (ts < qsSlashCooldown) {
+        // Between attacks: play idle bobbing animation at idle fps
+        var idleAnim = ANIM.idle;
+        if (ts - qsIdleLast > 1000 / idleAnim.fps) {
+          qsIdleLast = ts;
+          qsIdleFrame = (qsIdleFrame + 1) % idleAnim.frames;
+          qsSetCharFrame(idleAnim, qsIdleFrame);
+        }
+      } else {
+        // Attack cycle at combat fps
+        if (ts - qsCharLast > 1000 / anim.fps) {
+          qsCharLast = ts;
           qsCharFrame = (qsCharFrame + 1) % anim.frames;
           var displayFrame = qsCharFrame;
           if (_qsCls2 !== 'warrior') {
             displayFrame = [0,5,4,4,5,0][qsCharFrame % 6];
           }
           qsSetCharFrame(anim, displayFrame);
-          // When cycle completes, start cooldown
           if (qsCharFrame === anim.frames - 1) {
             qsSlashCooldown = ts + QS_SLASH_PAUSE;
+            qsCharFrame = 0;
           }
         }
-      } else {
+      }
+    } else {
+      if (ts - qsCharLast > 1000 / anim.fps) {
+        qsCharLast = ts;
         qsCharFrame = (qsCharFrame + 1) % anim.frames;
         qsSetCharFrame(anim, qsCharFrame);
       }
