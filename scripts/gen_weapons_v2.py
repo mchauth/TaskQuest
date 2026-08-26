@@ -253,12 +253,10 @@ def build_sheet(f0, source_path, out_path, weapon_type='sword',
                             out[r2, gx + ax_r] = FEATH
 
                 elif weapon_type == 'staff' and extended:
-                    # Energy orb at staff tip (topmost pixel after translation)
-                    tip_y_fr0 = min(y for x, y in f0.keys()) if f0 else round(cy0_f0)
-                    tip_xs = [x for x, y in f0.keys() if abs(y - tip_y_fr0) <= 2]
-                    tip_x_fr0 = round(float(np.mean(tip_xs))) if tip_xs else round(cx0_f0)
-                    orb_x = round(tip_x_fr0 + actual_dx)
-                    orb_y = round(tip_y_fr0 + actual_dy)
+                    # Energy orb: place at upper-left of the translated centroid
+                    # (tip of staff points upper-left in extended position)
+                    orb_x = max(3, min(FW-4, round(target_cx) - 6))
+                    orb_y = max(3, min(FH-4, round(target_cy) - 6))
                     orb_core = trail_c if trail_c else (180, 120, 255, 255)
                     orb_glow = trail_e if trail_e else (220, 180, 255, 180)
                     for dy2 in range(-3, 4):
@@ -461,26 +459,17 @@ for tier in ['t1','t2','t3','t4','t5','t6']:
                     trail_c=tc, trail_e=te)
 
 # ── Generate all bows ─────────────────────────────────────────────────────────
+# IMPORTANT: Read frame 0 from existing bow files — preserves the current bow
+# design on disk. make_bow_frame0() is kept for reference but NOT called here.
 print("\n=== Bows ===")
 
-# Bow tier designs — (limb_dark, limb_mid, limb_light, limb_hi, grip_dark, str_color)
-BOW_DESIGNS = {
-    't1': ((30,15,5,255),(80,48,20,255),(115,75,32,255),(145,100,45,255),(45,28,10,255),(220,210,190,255)),
-    't2': ((25,12,5,255),(95,55,20,255),(135,90,35,255),(165,120,50,255),(50,30,12,255),(210,215,200,255)),
-    't3': ((20,10,5,255),(60,80,40,255),(90,120,55,255),(120,160,70,255),(30,50,20,255),(180,230,200,255)),
-    't4': ((30,10,5,255),(140,60,20,255),(180,90,30,255),(220,130,50,255),(80,25,10,255),(255,200,100,255)),
-    't5': ((10,5,20,255), (50,20,80,255),(80,40,120,255),(110,60,160,255),(30,10,50,255),(180,130,255,255)),
-    't6': ((10,8,3,255),(180,150,20,255),(220,190,40,255),(255,230,80,255),(100,80,10,255),(255,240,200,255)),
-}
-
 for tier in ['t1','t2','t3','t4','t5','t6']:
-    design = BOW_DESIGNS[tier]
-    f0 = make_bow_frame0(*design)
-    # Trail for bow (green-ish arrow streak, no arc)
     for g in ['m','f']:
-        src_path = SRC_PATH  # use sword centroid for motion anchor
-        out_path = f'{OUT_DIR}bow_ranger_{tier}_{g}.png'
-        build_sheet(f0, src_path, out_path, weapon_type='bow',
+        fname = f'{OUT_DIR}bow_ranger_{tier}_{g}.png'
+        if not os.path.exists(fname):
+            print(f"  SKIP (not found): {fname}"); continue
+        f0 = extract_f0(fname)   # ← preserve existing bow design
+        build_sheet(f0, SRC_PATH, fname, weapon_type='bow',
                     trail_c=(220,200,140,255), trail_e=(180,160,100,255))
 
 print("\nDone.")
