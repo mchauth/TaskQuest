@@ -229,6 +229,9 @@ def build_sheet(f0, source_path, out_path, weapon_type='sword',
                 target_cy = cy_src
             actual_dx = round(target_cx - cx0_f0)
             actual_dy = round(target_cy - cy0_f0)
+            # Bow grip sits ~5px above centroid; shift up to place grip in hand.
+            if weapon_type == 'bow':
+                actual_dy -= 5
             pix = translate_pixels(f0, actual_dx, actual_dy)
             stamp(out, pix, gx, gy)
 
@@ -414,6 +417,92 @@ def extract_f0(path):
                 pix[(x,y)] = tuple(sl[y,x])
     return pix
 
+# ── Clean bow frame-0 generation (from gen_bows_v3 design) ───────────────────
+
+def _bezier2(p0, p1, p2, n=80):
+    pts = []
+    for i in range(n+1):
+        t = i / n
+        x = (1-t)**2*p0[0] + 2*(1-t)*t*p1[0] + t**2*p2[0]
+        y = (1-t)**2*p0[1] + 2*(1-t)*t*p1[1] + t**2*p2[1]
+        pts.append((round(x), round(y)))
+    seen = set(); out = []
+    for p in pts:
+        if p not in seen: seen.add(p); out.append(p)
+    return out
+
+def _bresenham(x0,y0,x1,y1):
+    pts=[]; dx,dy=abs(x1-x0),abs(y1-y0)
+    sx,sy=(1 if x1>x0 else -1),(1 if y1>y0 else -1)
+    err=dx-dy; x,y=x0,y0
+    while True:
+        pts.append((x,y))
+        if x==x1 and y==y1: break
+        e2=2*err
+        if e2>-dy: err-=dy; x+=sx
+        if e2<dx:  err+=dx; y+=sy
+    return pts
+
+def make_clean_bow_f0(dark, mid, light, hi, grip_col, str_col, recurve=False):
+    """C-shaped bow: upper tip ~(50,24), grip ~(40,44), lower tip ~(48,62)."""
+    pix = {}
+    UPPER_TIP = (50,24); GRIP_CX = (40,44); LOWER_TIP = (48,62)
+    UP_CTRL  = (18,38) if not recurve else (14,37)
+    LO_CTRL  = (22,56) if not recurve else (18,57)
+    upper_pts = _bezier2(UPPER_TIP, UP_CTRL, GRIP_CX)
+    lower_pts = _bezier2(GRIP_CX, LO_CTRL, LOWER_TIP)
+    for pts_list, (ca, cb) in [(upper_pts,(light,mid)), (lower_pts,(mid,light))]:
+        for i,(x,y) in enumerate(pts_list):
+            t = i/max(1,len(pts_list)-1)
+            if 0<=x<FW and 0<=y<FH:
+                pix[(x,y)] = ca if t<0.5 else cb
+                if 0.1<t<0.9 and x+1<FW: pix.setdefault((x+1,y), light)
+    if recurve:
+        for (tx,ty),(ox,oy) in [((UPPER_TIP),(4,-2)),((LOWER_TIP),(4,1))]:
+            for (x,y) in _bresenham(tx,ty,tx+ox,ty+oy):
+                if 0<=x<FW and 0<=y<FH: pix[(x,y)] = hi
+    # Grip wrap
+    for x in range(38,44):
+        for y in range(42,48): pix[(x,y)] = grip_col
+    for x in range(37,45): pix.setdefault((x,41),dark); pix.setdefault((x,48),dark)
+    for y in range(41,49): pix.setdefault((37,y),dark); pix.setdefault((44,y),dark)
+    # Outline limbs
+    limb_pts = set(upper_pts)|set(lower_pts)
+    for (x,y) in list(limb_pts):
+        for ox,oy in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nx,ny=x+ox,y+oy
+            if 0<=nx<FW and 0<=ny<FH and (nx,ny) not in limb_pts and (nx,ny) not in pix:
+                pix[(nx,ny)] = dark
+    # String
+    for (x,y) in _bresenham(UPPER_TIP[0]+1,UPPER_TIP[1]+1,LOWER_TIP[0]+1,LOWER_TIP[1]-1):
+        if 0<=x<FW and 0<=y<FH and (x,y) not in pix: pix[(x,y)] = str_col
+    return pix
+
+def scale_pixels(pix, scale, cx=None, cy=None):
+    """Scale a pixel dict by `scale` around centroid (or provided cx,cy)."""
+    if not pix: return pix
+    if cx is None:
+        xs=[p[0] for p in pix]; ys=[p[1] for p in pix]
+        cx,cy = float(np.mean(xs)), float(np.mean(ys))
+    result = {}
+    for (x,y),color in pix.items():
+        nx = round((x - cx)*scale + cx)
+        ny = round((y - cy)*scale + cy)
+        if 0<=nx<FW and 0<=ny<FH and (nx,ny) not in result:
+            result[(nx,ny)] = color
+    return result
+
+_A = 255
+def _c(*a): return (*a, _A)
+BOW_PALETTES = {
+    't1': dict(dark=_c(20,10,3),  mid=_c(90,55,20),   light=_c(135,90,38),  hi=_c(155,110,50), grip_col=_c(50,28,10),  str_col=_c(220,215,195), recurve=False),
+    't2': dict(dark=_c(20,8,3),   mid=_c(110,65,22),  light=_c(155,105,40), hi=_c(175,130,55), grip_col=_c(55,30,10),  str_col=_c(215,218,205), recurve=True),
+    't3': dict(dark=_c(10,20,8),  mid=_c(55,100,40),  light=_c(85,145,58),  hi=_c(110,175,75), grip_col=_c(30,55,18),  str_col=_c(180,235,200), recurve=True),
+    't4': dict(dark=_c(25,8,3),   mid=_c(155,68,18),  light=_c(195,105,32), hi=_c(225,140,55), grip_col=_c(90,28,8),   str_col=_c(255,205,100), recurve=True),
+    't5': dict(dark=_c(8,4,18),   mid=_c(55,22,100),  light=_c(90,48,145),  hi=_c(120,70,185), grip_col=_c(30,12,60),  str_col=_c(185,140,255), recurve=True),
+    't6': dict(dark=_c(10,8,2),   mid=_c(190,160,18), light=_c(230,200,40), hi=_c(255,238,90), grip_col=_c(110,90,8),  str_col=_c(255,245,200), recurve=True),
+}
+
 # ── Trail colors per weapon type ──────────────────────────────────────────────
 
 WHITE_TRAIL = (255,255,255,255)
@@ -463,16 +552,20 @@ for tier in ['t1','t2','t3','t4','t5','t6']:
                     trail_c=tc, trail_e=te)
 
 # ── Generate all bows ─────────────────────────────────────────────────────────
-# IMPORTANT: Read frame 0 from existing bow files — preserves the current bow
-# design on disk. make_bow_frame0() is kept for reference but NOT called here.
+# Use clean Bezier-based bow design (C-shape, no blotchiness) scaled to 0.85x.
+# make_clean_bow_f0 generates a smooth ')'-shaped bow (C opening right, string
+# on right; after game's scaleX(-1) flip → limbs face enemy on right side).
 print("\n=== Bows ===")
+BOW_SCALE = 0.85   # slightly smaller than full gen_bows_v3 size
 
 for tier in ['t1','t2','t3','t4','t5','t6']:
+    palette = BOW_PALETTES.get(tier, BOW_PALETTES['t1'])
+    f0_raw = make_clean_bow_f0(**palette)
+    f0 = scale_pixels(f0_raw, BOW_SCALE)
     for g in ['m','f']:
         fname = f'{OUT_DIR}bow_ranger_{tier}_{g}.png'
         if not os.path.exists(fname):
             print(f"  SKIP (not found): {fname}"); continue
-        f0 = extract_f0(fname)   # ← preserve existing bow design
         build_sheet(f0, SRC_PATH, fname, weapon_type='bow',
                     trail_c=(220,200,140,255), trail_e=(180,160,100,255))
 
