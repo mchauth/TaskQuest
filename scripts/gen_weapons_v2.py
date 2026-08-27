@@ -552,20 +552,17 @@ for tier in ['t1','t2','t3','t4','t5','t6']:
                     trail_c=tc, trail_e=te)
 
 # ── Generate all bows ─────────────────────────────────────────────────────────
-# Use clean Bezier-based bow design (C-shape, no blotchiness) scaled to 0.85x.
-# make_clean_bow_f0 generates a smooth ')'-shaped bow (C opening right, string
-# on right; after game's scaleX(-1) flip → limbs face enemy on right side).
+# Read frame 0 from existing bow files — preserves the locked-in bow design.
+# make_clean_bow_f0/BOW_PALETTES/scale_pixels are kept for reference but NOT
+# called here. To regenerate bows from scratch use gen_bows_v3.py instead.
 print("\n=== Bows ===")
-BOW_SCALE = 0.85   # slightly smaller than full gen_bows_v3 size
 
 for tier in ['t1','t2','t3','t4','t5','t6']:
-    palette = BOW_PALETTES.get(tier, BOW_PALETTES['t1'])
-    f0_raw = make_clean_bow_f0(**palette)
-    f0 = scale_pixels(f0_raw, BOW_SCALE)
     for g in ['m','f']:
         fname = f'{OUT_DIR}bow_ranger_{tier}_{g}.png'
         if not os.path.exists(fname):
             print(f"  SKIP (not found): {fname}"); continue
+        f0 = extract_f0(fname)   # ← preserve existing bow design
         build_sheet(f0, SRC_PATH, fname, weapon_type='bow',
                     trail_c=(220,200,140,255), trail_e=(180,160,100,255))
 
