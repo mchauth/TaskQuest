@@ -217,61 +217,65 @@ def build_sheet(f0, source_path, out_path, weapon_type='sword',
                 stamp(out, pix, gx, gy)
 
         elif weapon_type in ('staff', 'bow'):
-            # Staff/bow: align weapon's OWN centroid to sword centroid target,
-            # so bow/staff don't float above/beside the hand.
+            # Align weapon's OWN centroid to sword hand centroid for THIS frame.
+            # Characters are displayed with scaleX(-1), so LEFT in PNG = RIGHT on screen.
+            # For slash frames use the slash centroid table; for all other frames use
+            # the sword's per-frame centroid directly (absolute, not delta).
             if 50 <= fi <= 55:
-                extended = fi in [51, 52, 53]
-                target_fi = 54 if extended else 55
-                target_cx = SLASH_CX.get(target_fi, cx_src)
-                target_cy = SLASH_CY.get(target_fi, cy_src)
-                # Translate so THIS weapon's centroid lands on the sword target
-                actual_dx = round(target_cx - cx0_f0)
-                actual_dy = round(target_cy - cy0_f0)
-                pix = translate_pixels(f0, actual_dx, actual_dy)
-                stamp(out, pix, gx, gy)
-
-                if weapon_type == 'bow' and extended:
-                    # Arrow shoots LEFT from bow centroid (toward the enemy)
-                    # Short shaft: 12px, tip on left, feathers on right
-                    SHAFT = (120, 80,  35, 255)
-                    TIP   = (180, 180, 190, 255)
-                    FEATH = (200, 60,  60, 255)
-                    arrow_y = max(2, min(FH-3, round(target_cy)))
-                    ax_r = max(2, round(target_cx) - 2)  # feather end (near bow)
-                    ax_l = max(0, ax_r - 12)             # tip end (left)
-                    for ax in range(ax_l, ax_r):
-                        out[gy + arrow_y, gx + ax] = SHAFT
-                    # Tip (arrowhead) at left end
-                    for ay in [-1, 0, 1]:
-                        r2 = gy + arrow_y + ay
-                        if 0 <= r2 < out.shape[0] and gx + ax_l - 1 >= 0:
-                            out[r2, gx + ax_l - 1] = TIP
-                    # Feathers at right end
-                    for ay in [-1, 1]:
-                        r2 = gy + arrow_y + ay
-                        if 0 <= r2 < out.shape[0] and gx + ax_r < out.shape[1]:
-                            out[r2, gx + ax_r] = FEATH
-
-                elif weapon_type == 'staff' and extended:
-                    # Energy orb: place at upper-left of the translated centroid
-                    # (tip of staff points upper-left in extended position)
-                    orb_x = max(3, min(FW-4, round(target_cx) - 6))
-                    orb_y = max(3, min(FH-4, round(target_cy) - 6))
-                    orb_core = trail_c if trail_c else (180, 120, 255, 255)
-                    orb_glow = trail_e if trail_e else (220, 180, 255, 180)
-                    for dy2 in range(-3, 4):
-                        for dx2 in range(-3, 4):
-                            r2 = gy + orb_y + dy2
-                            c2 = gx + orb_x + dx2
-                            if 0 <= r2 < out.shape[0] and 0 <= c2 < out.shape[1]:
-                                dist = abs(dx2) + abs(dy2)
-                                if dist <= 1:
-                                    out[r2, c2] = orb_core
-                                elif dist <= 4:
-                                    out[r2, c2] = orb_glow
+                target_cx = SLASH_CX.get(fi, cx_src)
+                target_cy = SLASH_CY.get(fi, cy_src)
             else:
-                pix = translate_pixels(f0, dx, dy)
-                stamp(out, pix, gx, gy)
+                target_cx = cx_src   # sword centroid at this frame (absolute)
+                target_cy = cy_src
+            actual_dx = round(target_cx - cx0_f0)
+            actual_dy = round(target_cy - cy0_f0)
+            pix = translate_pixels(f0, actual_dx, actual_dy)
+            stamp(out, pix, gx, gy)
+
+            # Arrow on fr54 only — the frame shown when mage/ranger arm is fully raised.
+            # Tip at far LEFT in PNG → far RIGHT on screen (toward enemy) after scaleX(-1).
+            if weapon_type == 'bow' and fi == 54:
+                SHAFT = (120, 80,  35, 255)
+                TIP   = (180, 180, 190, 255)
+                FEATH = (200, 60,  60, 255)
+                arrow_y = max(2, min(FH-3, round(target_cy)))
+                ax_r = max(14, round(target_cx) - 2)   # feather end (right of shaft, near bow in PNG)
+                ax_l = max(0, ax_r - 16)               # tip end (far left in PNG = far right on screen)
+                for ax in range(ax_l, ax_r):
+                    if 0 <= gy + arrow_y < out.shape[0] and 0 <= gx + ax < out.shape[1]:
+                        out[gy + arrow_y, gx + ax] = SHAFT
+                # Tip (point) at far left → appears far right on screen toward enemy
+                # Use ax_l-1 if space available, else ax_l (stay within this frame slot)
+                tip_local = ax_l - 1 if ax_l > 0 else ax_l
+                for ay in [-1, 0, 1]:
+                    r2 = gy + arrow_y + ay
+                    tip_x = gx + tip_local
+                    if 0 <= r2 < out.shape[0] and gx <= tip_x < gx + FW:
+                        out[r2, tip_x] = TIP
+                # Feathers at right end (near bow on screen = behind the arrow)
+                for ay in [-1, 1]:
+                    r2 = gy + arrow_y + ay
+                    feat_x = gx + ax_r
+                    if 0 <= r2 < out.shape[0] and feat_x < out.shape[1]:
+                        out[r2, feat_x] = FEATH
+
+            # Energy orb on fr54 only — fires from staff tip toward enemy.
+            # Orb placed LEFT of centroid in PNG → RIGHT on screen after scaleX(-1).
+            elif weapon_type == 'staff' and fi == 54:
+                orb_x = max(3, min(FW-4, round(target_cx) - 10))
+                orb_y = max(3, min(FH-4, round(target_cy) - 6))
+                orb_core = trail_c if trail_c else (180, 120, 255, 255)
+                orb_glow = trail_e if trail_e else (220, 180, 255, 180)
+                for dy2 in range(-4, 5):
+                    for dx2 in range(-4, 5):
+                        r2 = gy + orb_y + dy2
+                        c2 = gx + orb_x + dx2
+                        if 0 <= r2 < out.shape[0] and 0 <= c2 < out.shape[1]:
+                            dist = abs(dx2) + abs(dy2)
+                            if dist <= 2:
+                                out[r2, c2] = orb_core
+                            elif dist <= 5:
+                                out[r2, c2] = orb_glow
 
         else:
             pix = translate_pixels(f0, dx, dy)
